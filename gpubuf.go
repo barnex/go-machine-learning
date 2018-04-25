@@ -12,13 +12,17 @@ var flagGPUID = flag.Int("gpu", 0, "Index of GPU to use")
 var cudaCtx cu.Context
 
 type GPUBuf struct {
-	Size
-	ptr cu.DevicePtr
+	size Size
+	ptr  cu.DevicePtr
 }
 
 func NewGPUBuf(s Size) *GPUBuf {
 	ptr := cu.MemAlloc(s.bytes())
 	return &GPUBuf{s, ptr}
+}
+
+func (b *GPUBuf) Size() Size {
+	return b.size
 }
 
 func (b *GPUBuf) Free() {
@@ -29,14 +33,19 @@ func (b *GPUBuf) Free() {
 	b.ptr = 0
 }
 
+func (b *GPUBuf) CopyFrom(src *GPUBuf) {
+	checkEqualSize(b.Size(), src.Size())
+	cu.MemcpyDtoD(b.ptr, src.ptr, b.size.bytes())
+}
+
 func (b *GPUBuf) Upload(h *HostBuf) {
-	checkEqualSize(b.Size, h.Size)
-	cu.MemcpyHtoD(b.ptr, h.ptr(), b.Size.bytes())
+	checkEqualSize(b.Size(), h.Size())
+	cu.MemcpyHtoD(b.ptr, h.ptr(), b.size.bytes())
 }
 
 func (b *GPUBuf) HostCopy() *HostBuf {
-	h := NewHostBuf(b.Size)
-	cu.MemcpyDtoH(h.ptr(), b.ptr, b.Size.bytes())
+	h := NewHostBuf(b.size)
+	cu.MemcpyDtoH(h.ptr(), b.ptr, b.size.bytes())
 	return h
 }
 

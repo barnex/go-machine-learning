@@ -27,27 +27,42 @@ func TestGPUBuf_Free(t *testing.T) {
 func TestGPUBuf_Copy(t *testing.T) {
 	InitTest()
 
-	b := NewGPUBuf(Size{1, 1024, 1024, 3})
-	defer b.Free()
-
-	h := b.HostCopy()
-	for _, v := range h.Data() {
-		if v != 0 {
-			t.Fatalf("have: %v, want: 0", v)
-		}
-	}
-
+	h := NewHostBuf(Size{1, 512, 1024, 3})
 	for i := range h.Data() {
 		h.Data()[i] = float32(i)
 	}
 
+	b := NewGPUBuf(h.Size())
+	defer b.Free()
 	b.Upload(h)
 
-	g := b.HostCopy()
+	b2 := NewGPUBuf(b.Size())
+	b2.CopyFrom(b)
+
+	g := b2.HostCopy()
 	for i, v := range g.Data() {
 		if v != float32(i) {
 			t.Fatalf("have: %v, want: %v", v, i)
 		}
 	}
 
+}
+
+func TestGPUBuf_CopyBadSize(t *testing.T) {
+	InitTest()
+
+	defer func() {
+		if p := recover(); p == nil {
+			t.Error("expected panic")
+		}
+	}()
+
+	h := NewHostBuf(Size{1, 512, 1024, 3})
+	for i := range h.Data() {
+		h.Data()[i] = float32(i)
+	}
+
+	b := NewGPUBuf(Size{2, 512, 1024, 3})
+	defer b.Free()
+	b.Upload(h)
 }
