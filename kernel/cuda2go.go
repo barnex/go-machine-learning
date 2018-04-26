@@ -153,7 +153,6 @@ const templText = `package kernel
 import(
 	"unsafe"
 	"github.com/barnex/cuda5/cu"
-	"sync"
 )
 
 // CUDA handle for {{.Name}} kernel
@@ -163,21 +162,16 @@ var {{.Name}}_code cu.Function
 type {{.Name}}_args_t struct{
 	{{range $i, $_ := .ArgN}} arg_{{.}} {{index $.ArgT $i}}
 	{{end}} argptr [{{len .ArgN}}]unsafe.Pointer
-	sync.Mutex
 }
 
-// Stores the arguments for {{.Name}} kernel invocation
-var {{.Name}}_args {{.Name}}_args_t
 
-func init(){
-	// CUDA driver kernel call wants pointers to arguments, set them up once.
-	{{range $i, $t := .ArgN}} {{$.Name}}_args.argptr[{{$i}}] = unsafe.Pointer(&{{$.Name}}_args.arg_{{.}})
-	{{end}} }
 
 // Wrapper for {{.Name}} CUDA kernel, synchronous.
-func K{{.Name}} ( {{range $i, $t := .ArgT}}{{index $.ArgN $i}} {{$t}}, {{end}} cfg *config) {
-	{{.Name}}_args.Lock()
-	defer {{.Name}}_args.Unlock()
+func K{{.Name}} ( {{range $i, $t := .ArgT}}{{index $.ArgN $i}} {{$t}}, {{end}} cfg *Config) {
+
+	var {{.Name}}_args {{.Name}}_args_t
+	{{range $i, $t := .ArgN}} {{$.Name}}_args.argptr[{{$i}}] = unsafe.Pointer(&{{$.Name}}_args.arg_{{.}})
+	{{end}}
 
 	if {{.Name}}_code == 0{
 		{{.Name}}_code = fatbinLoad({{.Name}}_map, "{{.Name}}")
