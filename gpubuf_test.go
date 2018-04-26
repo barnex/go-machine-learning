@@ -1,6 +1,7 @@
 package vs
 
 import (
+	"reflect"
 	"runtime"
 	"testing"
 
@@ -16,6 +17,18 @@ func InitTest() {
 }
 
 func TestGPUBuf_Free(t *testing.T) {
+	InitTest()
+	defer func() {
+		if p := recover(); p == nil {
+			t.Error("expected panic")
+		}
+	}()
+	b := NewGPUBuf(Size{1, 1024, 1024, 3})
+	b.Free()
+	b.Free() // panic: double-free
+}
+
+func TestGPUBuf_DoubleFree(t *testing.T) {
 	InitTest()
 	for i := 0; i < 1000; i++ {
 		b := NewGPUBuf(Size{1, 1024, 1024, 3})
@@ -44,7 +57,20 @@ func TestGPUBuf_Copy(t *testing.T) {
 			t.Fatalf("have: %v, want: %v", v, i)
 		}
 	}
+}
 
+func TestGPUBuf_Memset(t *testing.T) {
+	InitTest()
+
+	b := NewGPUBuf(Size{1, 1, 1, 4})
+	defer b.Free()
+
+	b.Memset(42)
+	h := b.HostCopy().Data()
+	want := []float32{42, 42, 42, 42}
+	if !reflect.DeepEqual(h, want) {
+		t.Errorf("have: %v, want: %v", h, want)
+	}
 }
 
 func TestGPUBuf_CopyBadSize(t *testing.T) {

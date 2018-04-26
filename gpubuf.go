@@ -3,6 +3,7 @@ package vs
 import (
 	"flag"
 	"fmt"
+	"math"
 	"unsafe"
 
 	"github.com/barnex/cuda5/cu"
@@ -56,6 +57,11 @@ func (b *GPUBuf) HostCopy() *HostBuf {
 	h := NewHostBuf(b.size)
 	cu.MemcpyDtoH(h.ptr(), b.ptr, b.size.bytes())
 	return h
+}
+
+func (b *GPUBuf) Memset(v float32) {
+	cu.MemsetD32Async(b.Ptr(), math.Float32bits(v), int64(b.size.Len()), cu.Stream(0))
+	cu.Stream(0).Synchronize()
 }
 
 func checkEqualSize(a, b Size) {
