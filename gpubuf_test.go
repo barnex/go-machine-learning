@@ -20,7 +20,6 @@ func TestGPUBuf_Free(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		b := NewGPUBuf(Size{1, 1024, 1024, 3})
 		b.Free()
-		b.Free()
 	}
 }
 

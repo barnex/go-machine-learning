@@ -3,6 +3,7 @@ package vs
 import (
 	"flag"
 	"fmt"
+	"unsafe"
 
 	"github.com/barnex/cuda5/cu"
 )
@@ -25,9 +26,17 @@ func (b *GPUBuf) Size() Size {
 	return b.size
 }
 
+func (b *GPUBuf) Ptr() cu.DevicePtr {
+	return b.ptr
+}
+
+func (b *GPUBuf) UPtr() unsafe.Pointer {
+	return unsafe.Pointer(b.ptr)
+}
+
 func (b *GPUBuf) Free() {
 	if b.ptr == 0 {
-		return
+		panic("double free")
 	}
 	cu.MemFree(b.ptr)
 	b.ptr = 0
