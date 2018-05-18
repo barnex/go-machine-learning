@@ -1,26 +1,29 @@
 package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
-func Sum(list []float32) float64 {
+func Sum(list []float32) float32 {
 	var sum float64
 	for _, v := range list {
 		sum += float64(v)
 	}
-	return sum
+	return float32(sum)
 }
 
-func Dot(a, b []float32) float64 {
+func Dot(a, b []float32) float32 {
 	sum := 0.0
 	for i, a := range a {
 		sum += float64(a * b[i])
 	}
-	return sum
+	return float32(sum)
 }
 
 func Normalize(dst, src []float32) {
-	N := float64(len(dst))
-	iavg := float32(1 / (Sum(src) / N))
+	N := float32(len(dst))
+	iavg := (1 / (Sum(src) / N))
 	for i := range src {
 		dst[i] = src[i] * iavg
 	}
@@ -38,10 +41,41 @@ func AddConst(dst, src []float32, cnst float32) {
 	}
 }
 
-func XEntropy(pred, real []float32) float64 {
+func XEntropy(real, pred []float32) float32 {
+	checkSize(real, pred)
 	var sum float64
 	for i := range pred {
-		sum += float64(real[i] * float32(math.Log(float64(pred[i]))))
+		sum += float64(real[i]) * math.Log(float64(pred[i]))
 	}
-	return -sum
+	return float32(-sum)
+}
+
+func SoftMax(dst, src []float32) {
+	Map64(dst, src, math.Exp)
+	Mul(dst, dst, 1/Sum(dst))
+}
+
+func Map64(dst, src []float32, f func(float64) float64) {
+	checkSize(dst, src)
+	for i := range src {
+		dst[i] = float32(f(float64(src[i])))
+	}
+}
+
+func Mul(dst, src []float32, c float32) {
+	for i := range src {
+		dst[i] = src[i] * c
+	}
+}
+
+func checkSize(a, b []float32) {
+	if len(a) != len(b) {
+		panic(fmt.Sprintf("size mismatch: %v != %v", len(a), len(b)))
+	}
+}
+
+func assert(test bool) {
+	if !test {
+		panic("assertion failed")
+	}
 }

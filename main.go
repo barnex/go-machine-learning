@@ -20,7 +20,7 @@ func main() {
 		hit, miss int
 	)
 
-	var m Method1
+	var m Model2
 	m.Train(flag.Arg(0))
 
 	var count [10][10]int
@@ -30,7 +30,7 @@ func main() {
 
 		for _, name := range readdir(dir) {
 			img := loadPNG(path.Join(dir, name))
-			infer := m.Infer(img)
+			infer := findMax(m.Infer(img))
 			count[digit][infer]++
 			if infer == digit {
 				hit++

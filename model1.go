@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"path"
 )
 
-type Method1 struct {
+type Model1 struct {
 	w []Mat
 }
 
-func (m *Method1) Train(dir string) {
+func (m *Model1) Train(dir string) {
 	dir = path.Join(dir, "training")
 	m.w = make([]Mat, 10)
 
@@ -25,8 +26,8 @@ func (m *Method1) Train(dir string) {
 	}
 }
 
-func (m *Method1) Infer(img Mat) int {
-	bestOverlap := 0.0
+func (m *Model1) Infer(img Mat) int {
+	bestOverlap := float32(math.Inf(-1))
 	bestI := 0
 	stdnorm(img.List, img.List)
 	for i, w := range m.w {
