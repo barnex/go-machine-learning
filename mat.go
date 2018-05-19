@@ -25,8 +25,8 @@ func (m Mat) Cols() int { return len(m.Elem[0]) }
 
 func (m Mat) Len() int { return len(m.List) }
 
-func printMat(mat [][]float32) {
-	for _, row := range mat {
+func (m Mat) Print() {
+	for _, row := range m.Elem {
 		for _, v := range row {
 			if v == 0 {
 				fmt.Print("     ")
@@ -36,4 +36,18 @@ func printMat(mat [][]float32) {
 		}
 		fmt.Println()
 	}
+	fmt.Println()
 }
+
+func (m Mat) Render(min, max float32) {
+	for _, row := range m.Elem {
+		for _, v := range row {
+			col := 240
+			fmt.Printf("\033[48;5;%dm%.1f\033[m", col, v)
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+}
+
+//  "\033[48;5;245mCOLOR1\033[m"

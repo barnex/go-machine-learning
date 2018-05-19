@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"path"
 )
 
@@ -26,17 +25,13 @@ func (m *Model1) Train(dir string) {
 	}
 }
 
-func (m *Model1) Infer(img Mat) int {
-	bestOverlap := float32(math.Inf(-1))
-	bestI := 0
+func (m *Model1) Infer(img Mat) []float32 {
 	stdnorm(img.List, img.List)
+	infer := make([]float32, 10)
 	for i, w := range m.w {
-		if overlap := Dot(img.List, w.List); overlap > bestOverlap {
-			bestI = i
-			bestOverlap = overlap
-		}
+		infer[i] = Dot(img.List, w.List)
 	}
-	return bestI
+	return infer
 }
 
 func stdnorm(dst, src []float32) {

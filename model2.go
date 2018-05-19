@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"path"
 )
@@ -12,25 +11,23 @@ type Model2 struct {
 	training [10][]Mat
 }
 
+var digits = []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
 func (m *Model2) Train(dir string) {
 	m.training = loadAllDigits(path.Join(dir, "training"))
 
-	//var real [10]float64
-	//...
-	//log.Println("loss", m.Loss())
-
-	for i := range m.training {
-		m.w[i] = NewMat(28, 28)
+	for i := range digits {
+		w := &m.w[i]
+		*w = NewMat(28, 28)
 		for _, img := range m.training[i] {
 			Add(m.w[i].List, img.List)
 		}
-		//		stdnorm(m.w[i].List, m.w[i].List)
+		stdnorm(m.w[i].List, m.w[i].List)
 	}
 
-	for _, w := range m.w {
-		printMat(w.Elem)
-		fmt.Println()
-	}
+	//for _, w := range m.w {
+	//	w.Print()
+	//}
 }
 
 func (m *Model2) Infer(img Mat) []float32 {
@@ -38,7 +35,7 @@ func (m *Model2) Infer(img Mat) []float32 {
 	for i, w := range m.w {
 		prob[i] = Dot(img.List, w.List)
 	}
-	SoftMax(prob, prob)
+	//SoftMax(prob, prob)
 	return prob
 }
 
