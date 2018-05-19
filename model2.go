@@ -25,9 +25,9 @@ func (m *Model2) Train(dir string) {
 		stdnorm(m.w[i].List, m.w[i].List)
 	}
 
-	//for _, w := range m.w {
-	//	w.Print()
-	//}
+	for _, w := range m.w {
+		w.Render(MinMax(w.List))
+	}
 }
 
 func (m *Model2) Infer(img Mat) []float32 {

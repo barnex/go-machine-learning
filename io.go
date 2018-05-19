@@ -51,8 +51,6 @@ func loadPNG(fname string) Mat {
 			mat.Elem[iy][ix] = float32(float64(r) / 0xffff)
 		}
 	}
-
-	mat.Render(0, 1)
 	return mat
 }
 

@@ -36,6 +36,5 @@ func (m *Model1) Infer(img Mat) []float32 {
 
 func stdnorm(dst, src []float32) {
 	Normalize(dst, src)
-	c := float32(-0.5 * float64(len(dst)))
-	AddConst(dst, dst, c)
+	AddConst(dst, dst, -0.5*Avg(dst))
 }

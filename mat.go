@@ -40,12 +40,21 @@ func (m Mat) Print() {
 }
 
 func (m Mat) Render(min, max float32) {
+	// see https://en.wikipedia.org/wiki/ANSI_escape_code
+	const black = 232
+	const white = 255
 	for _, row := range m.Elem {
 		for _, v := range row {
-			col := 240
-			fmt.Printf("\033[48;5;%dm%.1f\033[m", col, v)
+			col := int(black + ((v-min)/(max-min))*(white-black))
+			if col < black {
+				col = 12 // blue, underflow
+			}
+			if col > white {
+				col = 9 // red, overflow
+			}
+			fmt.Printf("\033[48;5;%dm% 3.2f", col, v)
 		}
-		fmt.Println()
+		fmt.Println("\033[m")
 	}
 	fmt.Println()
 }

@@ -13,6 +13,24 @@ func Sum(list []float32) float32 {
 	return float32(sum)
 }
 
+func Avg(list []float32) float32 {
+	return Sum(list) / float32(len(list))
+}
+
+func MinMax(list []float32) (min float32, max float32) {
+	min = list[0]
+	max = list[0]
+	for _, v := range list {
+		if v < min {
+			min = v
+		}
+		if v > max {
+			max = v
+		}
+	}
+	return min, max
+}
+
 func Dot(a, b []float32) float32 {
 	sum := 0.0
 	for i, a := range a {
