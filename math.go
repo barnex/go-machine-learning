@@ -32,11 +32,12 @@ func MinMax(list []float32) (min float32, max float32) {
 }
 
 func Dot(a, b []float32) float32 {
+	checkSize(a, b)
 	sum := 0.0
 	for i, a := range a {
 		sum += float64(a * b[i])
 	}
-	return float32(sum)
+	return float32(sum / float64(len(a)))
 }
 
 func Normalize(dst, src []float32) {

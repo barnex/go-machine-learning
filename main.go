@@ -7,6 +7,8 @@ import (
 	"path"
 )
 
+var digits = []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
 func main() {
 	log.SetFlags(0)
 	flag.Parse()

@@ -7,7 +7,7 @@ import (
 
 func TestMath(t *testing.T) {
 	testEqf(t, Sum([]float32{1, 2, 3}), 6)
-	testEqf(t, Dot([]float32{1, 2, 3}, []float32{4, 5, 6}), 32)
+	testEqf(t, Dot([]float32{1, 2, 3}, []float32{4, 5, 6}), 32./3)
 
 }
 
