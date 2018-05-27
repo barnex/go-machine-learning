@@ -9,7 +9,12 @@ type Img struct {
 }
 
 func NewImg(rows, cols int) Img {
-	list := make([]float64, cols*rows)
+	return ImgFromSlice(make([]float64, cols*rows), rows, cols)
+
+}
+
+func ImgFromSlice(list []float64, rows, cols int) Img {
+	checkSize(len(list), rows*cols)
 	mat := make([][]float64, rows)
 	for iy := range mat {
 		mat[iy] = list[iy*cols : (iy+1)*cols]
@@ -34,11 +39,14 @@ func (m Img) Len() int {
 
 func (m Img) Print() {
 	for _, row := range m.Elem {
-		for _, v := range row {
+		for i, v := range row {
+			if i != 0 {
+				fmt.Print(" ")
+			}
 			if v == 0 {
 				fmt.Print("     ")
 			} else {
-				fmt.Printf("%.2f ", v)
+				fmt.Printf("%.2f", v)
 			}
 		}
 		fmt.Println()

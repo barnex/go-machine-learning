@@ -11,8 +11,7 @@ import (
 
 // LoadImg loads a grayscale PNG image from file.
 func LoadImg(fname string) Img {
-	f, err := os.Open(fname)
-	check(err)
+	f := MustOpen(fname)
 	defer f.Close()
 	img, err := png.Decode(f)
 	check(err)
@@ -27,8 +26,19 @@ func LoadImg(fname string) Img {
 	return mat
 }
 
-func LoadLabeledSet(dir string) []LabeledImg {
+func MustOpen(fname string) *os.File {
+	f, err := os.Open(fname)
+	check(err)
+	return f
+}
 
+func MustCreate(fname string) *os.File {
+	f, err := os.Create(fname)
+	check(err)
+	return f
+}
+
+func LoadLabeledSet(dir string) []LabeledImg {
 	var perDigit [10][]Img
 	var wg sync.WaitGroup
 	wg.Add(len(perDigit))
