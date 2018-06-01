@@ -2,6 +2,7 @@ package vs
 
 import (
 	"fmt"
+	"math"
 	"path"
 	"runtime"
 )
@@ -18,6 +19,10 @@ func assert(test bool) {
 	if !test {
 		panic(fmt.Sprintf("%v: assertion failed", caller(1)))
 	}
+}
+
+func approxEq(a, b, tol float64) bool {
+	return math.Abs(a-b) < tol
 }
 
 func caller(skip int) string {

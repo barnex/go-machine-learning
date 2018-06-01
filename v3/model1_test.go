@@ -19,7 +19,7 @@ func TestModel1(t *testing.T) {
 	t.Skip("TODO")
 	model := NewModel1()
 
-	//Train(model, trainingSet)
+	TrainDumb(model, trainingSet)
 
 	correct := Test(model, testingSet)
 	success := float64(correct) / float64(len(testingSet))

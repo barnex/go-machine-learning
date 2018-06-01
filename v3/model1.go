@@ -28,6 +28,10 @@ func NewModel1() *Model1 {
 	return m
 }
 
+func (m *Model1) Params() []float64 {
+	return m.params
+}
+
 func (m *Model1) Infer(dst []float64, img Img) {
 	checkSize(len(dst), len(m.b))
 

@@ -44,20 +44,20 @@ func Sum(list []float64) float64 {
 //func Avg(list []float64) float64 {
 //	return Sum(list) / float64(len(list))
 //}
-//
-//func MinMax(list []float64) (min float64, max float64) {
-//	min = list[0]
-//	max = list[0]
-//	for _, v := range list {
-//		if v < min {
-//			min = v
-//		}
-//		if v > max {
-//			max = v
-//		}
-//	}
-//	return min, max
-//}
+
+func MinMax(list []float64) (min float64, max float64) {
+	min = list[0]
+	max = list[0]
+	for _, v := range list {
+		if v < min {
+			min = v
+		}
+		if v > max {
+			max = v
+		}
+	}
+	return min, max
+}
 
 func DotNorm(a, b []float64) float64 {
 	checkSize(len(a), len(b))
