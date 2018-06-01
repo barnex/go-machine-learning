@@ -23,11 +23,18 @@ func NewModel1() *Model1 {
 	}
 	m.b = params[pos:]
 	checkSize(len(m.b), len(digits))
+
+	Randomize(m.params, 0.01)
 	return m
 }
 
 func (m *Model1) Infer(dst []float64, img Img) {
+	checkSize(len(dst), len(m.b))
 
+	for i := range dst {
+		dst[i] = DotNorm(m.w[i].List, img.List) + m.b[i]
+	}
+	SoftMax(dst, dst)
 }
 
 func (m *Model1) NumLabels() int { return len(digits) }

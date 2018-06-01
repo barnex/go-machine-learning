@@ -1,5 +1,10 @@
 package vs
 
+import (
+	"math"
+	"math/rand"
+)
+
 // ArgMax returns the index of the maximum value in list x.
 func ArgMax(x []float64) int {
 	maxX := x[0]
@@ -18,6 +23,13 @@ func Normalize(dst, src []float64) {
 	iavg := (1 / (Sum(src) / N))
 	for i := range src {
 		dst[i] = src[i] * iavg
+	}
+}
+
+func Randomize(dst []float64, ampl float64) {
+	ampl2 := ampl * 2
+	for i := range dst {
+		dst[i] = (rand.Float64() - 0.5) * ampl2
 	}
 }
 
@@ -46,15 +58,15 @@ func Sum(list []float64) float64 {
 //	}
 //	return min, max
 //}
-//
-//func Dot(a, b []float64) float64 {
-//	checkSize(a, b)
-//	sum := 0.0
-//	for i, a := range a {
-//		sum += float64(a * b[i])
-//	}
-//	return float64(sum / float64(len(a)))
-//}
+
+func DotNorm(a, b []float64) float64 {
+	checkSize(len(a), len(b))
+	sum := 0.0
+	for i, a := range a {
+		sum += float64(a * b[i])
+	}
+	return float64(sum / float64(len(a)))
+}
 
 //func Add(dst, src []float64) {
 //	for i := range dst {
@@ -76,33 +88,21 @@ func Sum(list []float64) float64 {
 //	}
 //	return float64(-sum)
 //}
-//
-//func SoftMax(dst, src []float64) {
-//	Map64(dst, src, math.Exp)
-//	Mul(dst, dst, 1/Sum(dst))
-//}
-//
-//func Map64(dst, src []float64, f func(float64) float64) {
-//	checkSize(dst, src)
-//	for i := range src {
-//		dst[i] = float64(f(float64(src[i])))
-//	}
-//}
-//
-//func Mul(dst, src []float64, c float64) {
-//	for i := range src {
-//		dst[i] = src[i] * c
-//	}
-//}
-//
-//func checkSize(a, b []float64) {
-//	if len(a) != len(b) {
-//		panic(fmt.Sprintf("size mismatch: %v != %v", len(a), len(b)))
-//	}
-//}
-//
-//func assert(test bool) {
-//	if !test {
-//		panic("assertion failed")
-//	}
-//}
+
+func SoftMax(dst, src []float64) {
+	Map64(dst, src, math.Exp)
+	Mul(dst, dst, 1/Sum(dst))
+}
+
+func Map64(dst, src []float64, f func(float64) float64) {
+	checkSize(len(dst), len(src))
+	for i := range src {
+		dst[i] = float64(f(float64(src[i])))
+	}
+}
+
+func Mul(dst, src []float64, c float64) {
+	for i := range src {
+		dst[i] = src[i] * c
+	}
+}

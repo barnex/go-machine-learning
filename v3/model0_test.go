@@ -1,8 +1,9 @@
 package vs
 
 var (
-	trainingSet []LabeledImg = nil // LoadLabeledSet("mnist_png/training")
-	testingSet  []LabeledImg = nil // LoadLabeledSet("mnist_png/testing")
+	// TODO: load all
+	trainingSet []LabeledImg = LoadLabeledSet("mnist_png/training", 20)
+	testingSet  []LabeledImg = LoadLabeledSet("mnist_png/testing", 20)
 )
 
 //func TestModel0(t *testing.T) {

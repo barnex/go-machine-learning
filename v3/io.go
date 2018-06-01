@@ -38,7 +38,7 @@ func MustCreate(fname string) *os.File {
 	return f
 }
 
-func LoadLabeledSet(dir string) []LabeledImg {
+func LoadLabeledSet(dir string, N int) []LabeledImg {
 	var perDigit [10][]Img
 	var wg sync.WaitGroup
 	wg.Add(len(perDigit))
@@ -46,7 +46,7 @@ func LoadLabeledSet(dir string) []LabeledImg {
 		i := i
 		go func() {
 			defer wg.Done()
-			perDigit[i] = loadAll(path.Join(dir, fmt.Sprint(i)))
+			perDigit[i] = loadAll(path.Join(dir, fmt.Sprint(i)), N)
 		}()
 	}
 	wg.Wait()
@@ -61,10 +61,13 @@ func LoadLabeledSet(dir string) []LabeledImg {
 }
 
 // loadAll loads all images in dir.
-func loadAll(dir string) []Img {
+func loadAll(dir string, N int) []Img {
 	ls := readdir(dir)
-	img := make([]Img, len(ls))
+	img := make([]Img, min(len(ls), N))
 	for i, f := range ls {
+		if i == N {
+			break
+		}
 		img[i] = LoadImg(path.Join(dir, f))
 	}
 	return img
