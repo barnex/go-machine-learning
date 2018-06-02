@@ -9,5 +9,7 @@ type Model interface {
 	// Infer stores the guessed probabilities per label in dst.
 	Infer(dst []float64, img Img)
 
+	//RawGrad(dst []float64, x LabeledImg)
+
 	Params() []float64
 }

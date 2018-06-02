@@ -16,9 +16,9 @@ func TestModel1_Aliasing(t *testing.T) {
 }
 
 func TestModel1(t *testing.T) {
-	if testing.Short() {
-		t.Skip("short")
-	}
+	//if testing.Short() {
+	t.Skip("short")
+	//}
 	model := NewModel1()
 
 	//TrainDumb(model, trainingSet)
@@ -30,3 +30,19 @@ func TestModel1(t *testing.T) {
 	want := 0.88
 	testApprox(t, success, want, 0.03)
 }
+
+//func TestModel1_Grad(t *testing.T) {
+//	m := NewModel1()
+//	Randomize(m.Params(), 0.5)
+//	Set(m.b, 0)
+//
+//	x := LabeledImg{Img: NewImg(m.w[0].Rows(), m.w[0].Cols()), Label: 1}
+//	Randomize(x.List, 0.5)
+//
+//	have := make([]float64, len(m.Params()))
+//	m.Grad(have, x)
+//
+//	want := make([]float64, len(m.Params()))
+//	GradNumerical(want, m, x)
+//
+//}
