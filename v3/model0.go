@@ -18,5 +18,5 @@ func (m *Model0) Infer(dst []float64, img Img) {
 	for i := range dst {
 		dst[i] = rand.Float64()
 	}
-	Normalize(dst, dst)
+	NormalizeDistr(dst, dst)
 }

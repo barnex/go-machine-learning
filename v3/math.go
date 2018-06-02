@@ -18,12 +18,28 @@ func ArgMax(x []float64) int {
 	return maxI
 }
 
-func Normalize(dst, src []float64) {
+func MAdd(dst, a []float64, s float64, b []float64) {
+	checkSize(len(dst), len(a))
+	checkSize(len(dst), len(b))
+	for i := range dst {
+		dst[i] = a[i] + s*b[i]
+	}
+}
+
+func NormalizeDistr(dst, src []float64) {
 	N := float64(len(dst))
 	iavg := (1 / (Sum(src) / N))
 	for i := range src {
 		dst[i] = src[i] * iavg
 	}
+}
+
+func Len2(x []float64) float64 {
+	return Dot(x, x)
+}
+
+func Len(x []float64) float64 {
+	return math.Sqrt(Dot(x, x))
 }
 
 func Randomize(dst []float64, ampl float64) {
@@ -59,13 +75,13 @@ func MinMax(list []float64) (min float64, max float64) {
 	return min, max
 }
 
-func DotNorm(a, b []float64) float64 {
+func Dot(a, b []float64) float64 {
 	checkSize(len(a), len(b))
 	sum := 0.0
 	for i, a := range a {
 		sum += float64(a * b[i])
 	}
-	return float64(sum / float64(len(a)))
+	return sum
 }
 
 //func Add(dst, src []float64) {

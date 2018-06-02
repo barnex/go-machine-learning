@@ -23,8 +23,6 @@ func NewModel1() *Model1 {
 	}
 	m.b = params[pos:]
 	checkSize(len(m.b), len(digits))
-
-	Randomize(m.params, 0.01)
 	return m
 }
 
@@ -34,9 +32,10 @@ func (m *Model1) Params() []float64 {
 
 func (m *Model1) Infer(dst []float64, img Img) {
 	checkSize(len(dst), len(m.b))
+	N := float64(len(dst))
 
 	for i := range dst {
-		dst[i] = DotNorm(m.w[i].List, img.List) + m.b[i]
+		dst[i] = Dot(m.w[i].List, img.List)/N + m.b[i]
 	}
 	SoftMax(dst, dst)
 }

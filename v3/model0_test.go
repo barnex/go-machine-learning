@@ -1,11 +1,5 @@
 package vs
 
-var (
-	// TODO: load all
-	trainingSet []LabeledImg = LoadLabeledSet("mnist_png/training", 20)
-	testingSet  []LabeledImg = LoadLabeledSet("mnist_png/testing", 20)
-)
-
 //func TestModel0(t *testing.T) {
 //	model := NewModel0()
 //

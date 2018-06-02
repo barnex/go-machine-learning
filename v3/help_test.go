@@ -6,6 +6,12 @@ import (
 	"testing"
 )
 
+var (
+	// TODO: load all
+	trainingSet []LabeledImg = LoadLabeledSet("mnist_png/training", 5)
+	testingSet  []LabeledImg = LoadLabeledSet("mnist_png/testing", 200)
+)
+
 func testEqf(t *testing.T, have, want float64) {
 	t.Helper()
 	testNoNaN(t, have, want)

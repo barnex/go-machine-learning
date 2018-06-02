@@ -6,9 +6,34 @@ import (
 	"math/rand"
 )
 
-func TrainDumb(m *Model1, training []LabeledImg) {
+func TrainGradNum(m *Model1, trainingSet []LabeledImg) {
 
 	params := m.Params()
+	Randomize(params, 0.001)
+	grad := make([]float64, len(params))
+	relRate := 1. / 16.
+
+	for {
+		GradNumerical(grad, m, trainingSet)
+		fmt.Println(grad)
+
+		lG := Len(grad)
+		lP := Len(params)
+		rate := relRate * lG / lP
+		MAdd(params, params, -rate, grad)
+
+		for _, w := range m.w {
+			w.Render(MinMax(w.List))
+		}
+		log.Printf("lG:%v, lP:%v, rate:%v", lG, lP, rate)
+		log.Println("have:", Test(m, trainingSet), "/", len(trainingSet), "loss:", Loss(m, trainingSet))
+	}
+}
+
+func TrainDumb(m *Model1, trainingSet []LabeledImg) {
+
+	params := m.Params()
+	Randomize(params, 0.001)
 
 	l := Loss(m, trainingSet)
 

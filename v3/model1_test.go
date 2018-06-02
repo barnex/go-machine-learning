@@ -16,10 +16,13 @@ func TestModel1_Aliasing(t *testing.T) {
 }
 
 func TestModel1(t *testing.T) {
-	t.Skip("TODO")
+	if testing.Short() {
+		t.Skip("short")
+	}
 	model := NewModel1()
 
-	TrainDumb(model, trainingSet)
+	//TrainDumb(model, trainingSet)
+	TrainGradNum(model, trainingSet)
 
 	correct := Test(model, testingSet)
 	success := float64(correct) / float64(len(testingSet))

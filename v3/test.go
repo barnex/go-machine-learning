@@ -16,7 +16,7 @@ func Loss(m Model, testdata []LabeledImg) float64 {
 
 		loss += -math.Log(infer[img.Label])
 	}
-	return loss
+	return loss / float64(len(testdata))
 }
 
 func Test(m Model, testdata []LabeledImg) (correct int) {
