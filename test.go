@@ -1,18 +1,14 @@
 package vs
 
-//import "math"
+func Accuracy(m Net, w []float64, lx []LabeledVec) int {
+	var nHit int
 
-//func Infer(m Net, w []float64, x []float64) int {
-//	assert(len(testdata) > 0)
-//
-//	var nHit int
-//	guess := make([]float64, m.NumLabels())
-//	for _, limg := range testdata {
-//		assert(len(limg.Img.List) > 0)
-//		m.Infer(guess, limg.Img)
-//		if ArgMax(guess) == limg.Label {
-//			nHit++
-//		}
-//	}
-//	return nHit
-//}
+	guess := make([]float64, m.NumOut())
+	for _, lx := range lx {
+		Infer(guess, m, w, lx.X)
+		if ArgMax(guess) == lx.Label {
+			nHit++
+		}
+	}
+	return nHit
+}

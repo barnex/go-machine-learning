@@ -1,5 +1,6 @@
 package vs
 
+/*
 import (
 	"log"
 	"testing"
@@ -46,3 +47,4 @@ func TestModel1(t *testing.T) {
 //	GradNumerical(want, m, x)
 //
 //}
+*/

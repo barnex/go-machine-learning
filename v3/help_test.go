@@ -1,5 +1,7 @@
 package vs
 
+/*
+
 import (
 	"math"
 	"reflect"
@@ -48,3 +50,4 @@ func testNoNaN(t *testing.T, v ...float64) {
 		}
 	}
 }
+*/
