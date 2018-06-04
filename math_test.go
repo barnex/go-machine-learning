@@ -8,6 +8,11 @@ import (
 )
 
 func TestMath(t *testing.T) {
+	{
+		dst := make([]float64, 2)
+		Add(dst, []float64{1, 2}, []float64{4, 5})
+		test.Eqv(t, dst, []float64{5, 7})
+	}
 	test.Eq(t, ArgMax([]float64{1, 2, 3}), 2)
 	test.Eqf(t, Dot([]float64{1, 2, 3}, []float64{4, 5, 6}), 32)
 	test.Eqf(t, Len2([]float64{3, 4}), 25)

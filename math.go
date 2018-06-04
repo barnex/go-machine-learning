@@ -5,6 +5,16 @@ import (
 	"math/rand"
 )
 
+// Add adds a and b.
+// 	dst[i] = a[i] + b[i]
+func Add(dst, a []float64, b []float64) {
+	checkSize(len(dst), len(a))
+	checkSize(len(dst), len(b))
+	for i := range dst {
+		dst[i] = a[i] + b[i]
+	}
+}
+
 // ArgMax returns the index of the maximum value in list x.
 func ArgMax(x []float64) int {
 	maxX := x[0]

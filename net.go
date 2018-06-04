@@ -18,6 +18,7 @@ type Net interface {
 	// 	len(dst) == NumOut()
 	// 	len(w) == NumWeight()
 	// 	len(x) == NumIn()
+	// TODO: -> Eval
 	Logits(dst, w, x []float64)
 }
 
