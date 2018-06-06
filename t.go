@@ -5,13 +5,13 @@ type T struct {
 	size Dim
 }
 
-func NewT(rows, cols int) *T {
+func MakeT(rows, cols int) T {
 	return Reshape(make([]float64, cols*rows), rows, cols)
 }
 
-func Reshape(list []float64, rows, cols int) *T {
+func Reshape(list []float64, rows, cols int) T {
 	CheckSize(len(list), rows*cols)
-	return &T{list, Dim{rows, cols}}
+	return T{list, Dim{rows, cols}}
 }
 
 // Len returns the total number of elements

@@ -13,7 +13,7 @@ func NewLU(numOut, numIn int) *LU {
 var _ Net = (*LU)(nil)
 
 func (f *LU) NumOut() int {
-	return f.NumOut()
+	return f.numOut
 }
 
 func (f *LU) NumWeight() int {
@@ -21,7 +21,7 @@ func (f *LU) NumWeight() int {
 }
 
 func (f *LU) NumIn() int {
-	return f.NumIn()
+	return f.numIn
 }
 
 func (f *LU) Ai(w []float64, i int) []float64 {
@@ -36,7 +36,15 @@ func (f *LU) B(w []float64) []float64 {
 }
 
 func (f *LU) Eval(y, w, x []float64) {
-	CheckSize(len(y), f.numOut)
-	CheckSize(len(w), f.NumWeight())
-	CheckSize(len(x), f.numIn)
+	NetCheckSize(f, y, w, x)
+
+	B := f.B(w)
+	for i := range y {
+		Ai := f.Ai(w, i)
+		y[i] = Dot(Ai, x) + B[i]
+	}
+}
+
+func (f *LU) Grad(y T, w, x []float64) {
+
 }
