@@ -11,10 +11,10 @@ func GradLogits(y []float64, f Net, w, x []float64, i int) {
 	backup := w[i]
 
 	w[i] = backup - delta
-	f.Logits(y1, w, x)
+	f.Eval(y1, w, x)
 
 	w[i] = backup + delta
-	f.Logits(y2, w, x)
+	f.Eval(y2, w, x)
 
 	w[i] = backup
 

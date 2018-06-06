@@ -1,10 +1,7 @@
 package vs
 
-import (
-	"fmt"
-)
-
-func GradDescent(f, gll Net, w []float64, xl []LabeledVec) {
+func GradDescent(f, gll Net, w []float64, xl []LabeledVec, NStep int) {
+	const relRate = 1. / 16.
 
 	checkSize(gll.NumIn(), f.NumIn())
 	checkSize(gll.NumWeight(), f.NumWeight())
@@ -13,16 +10,12 @@ func GradDescent(f, gll Net, w []float64, xl []LabeledVec) {
 	buf := make([]float64, gll.NumOut())
 	grad := make([]float64, gll.NumOut())
 
-	for {
-
+	for i := 0; i < NStep; i++ {
 		avgGrad(grad, gll, w, xl, buf)
-
-		fmt.Println(grad)
-
-		//lG := Len(grad)
-		//lP := Len(params)
-		//rate := relRate * lG / lP
-		//MAdd(params, params, -rate, grad)
+		lG := Len(grad)
+		lW := Len(w)
+		rate := relRate * lG / lW
+		MAdd(w, w, -rate, grad)
 
 		//for _, w := range m.w {
 		//	w.Render(MinMax(w.List))
@@ -35,7 +28,7 @@ func GradDescent(f, gll Net, w []float64, xl []LabeledVec) {
 func avgGrad(grad []float64, gll Net, w []float64, xl []LabeledVec, buf []float64) {
 	Set(grad, 0)
 	for _, xl := range xl {
-		gll.Logits(buf, w, xl.X)
+		gll.Eval(buf, w, xl.X)
 		Add(grad, grad, buf)
 	}
 	Mul(grad, 1/float64(len(xl)), grad)

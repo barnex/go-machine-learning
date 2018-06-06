@@ -13,13 +13,12 @@ type Net interface {
 	// NumIn retruns the number of inputs.
 	NumIn() int
 
-	// Logits feeds input x through the network,
+	// Eval feeds input x through the network,
 	// and stores the raw, unnormalized output in dst.
 	// 	len(dst) == NumOut()
 	// 	len(w) == NumWeight()
 	// 	len(x) == NumIn()
-	// TODO: -> Eval
-	Logits(dst, w, x []float64)
+	Eval(dst, w, x []float64)
 }
 
 func netCheckSize(f Net, dst, w, x []float64) {

@@ -24,7 +24,7 @@ func (f *MNIST1) NumIn() int {
 	return numIn
 }
 
-func (f *MNIST1) Logits(dst, w, x []float64) {
+func (f *MNIST1) Eval(dst, w, x []float64) {
 	netCheckSize(f, dst, w, x)
 	B := f.Bias(w)
 	for i := range dst {
