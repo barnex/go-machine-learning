@@ -1,5 +1,9 @@
 package vs
 
+import (
+	. "github.com/barnex/vectorstream"
+)
+
 type MNIST1 struct{}
 
 var _ Net = &MNIST1{}
@@ -25,7 +29,7 @@ func (f *MNIST1) NumIn() int {
 }
 
 func (f *MNIST1) Eval(dst, w, x []float64) {
-	netCheckSize(f, dst, w, x)
+	NetCheckSize(f, dst, w, x)
 	B := f.Bias(w)
 	for i := range dst {
 		W := f.Weight(w, i)
@@ -34,9 +38,9 @@ func (f *MNIST1) Eval(dst, w, x []float64) {
 }
 
 func (f *MNIST1) Bias(w []float64) []float64 {
-	checkSize(len(w), f.NumWeight())
+	CheckSize(len(w), f.NumWeight())
 	b := w[numIn*numOut:]
-	checkSize(len(b), numBias)
+	CheckSize(len(b), numBias)
 	return b
 }
 

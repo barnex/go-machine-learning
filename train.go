@@ -3,9 +3,9 @@ package vs
 func GradDescent(f, gll Net, w []float64, xl []LabeledVec, NStep int) {
 	const relRate = 1. / 16.
 
-	checkSize(gll.NumIn(), f.NumIn())
-	checkSize(gll.NumWeight(), f.NumWeight())
-	checkSize(gll.NumOut(), f.NumWeight()) // output = grad_weight f
+	CheckSize(gll.NumIn(), f.NumIn())
+	CheckSize(gll.NumWeight(), f.NumWeight())
+	CheckSize(gll.NumOut(), f.NumWeight()) // output = grad_weight f
 
 	buf := make([]float64, gll.NumOut())
 	grad := make([]float64, gll.NumOut())

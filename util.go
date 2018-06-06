@@ -7,13 +7,13 @@ import (
 	"runtime"
 )
 
-func checkSize(a, b int) {
+func CheckSize(a, b int) {
 	if a != b {
 		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(1), a, b))
 	}
 }
 
-func assert(test bool) {
+func Assert(test bool) {
 	if !test {
 		panic(fmt.Sprintf("%v: assertion failed", caller(1)))
 	}

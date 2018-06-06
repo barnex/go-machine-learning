@@ -2,6 +2,7 @@ package vs
 
 import (
 	"fmt"
+	. "github.com/barnex/vectorstream"
 	"testing"
 )
 

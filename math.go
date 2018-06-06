@@ -8,8 +8,8 @@ import (
 // Add adds a and b.
 // 	dst[i] = a[i] + b[i]
 func Add(dst, a []float64, b []float64) {
-	checkSize(len(dst), len(a))
-	checkSize(len(dst), len(b))
+	CheckSize(len(dst), len(a))
+	CheckSize(len(dst), len(b))
 	for i := range dst {
 		dst[i] = a[i] + b[i]
 	}
@@ -31,7 +31,7 @@ func ArgMax(x []float64) int {
 // Dot returns the dot product
 // 	sum_i a[i]*b[i]
 func Dot(a, b []float64) float64 {
-	checkSize(len(a), len(b))
+	CheckSize(len(a), len(b))
 	sum := 0.0
 	for i, a := range a {
 		sum += float64(a * b[i])
@@ -52,8 +52,8 @@ func Len(x []float64) float64 {
 // MAdd performs a multiply+add:
 // 	dst[i] = a[i] + s*b[i]
 func MAdd(dst, a []float64, s float64, b []float64) {
-	checkSize(len(dst), len(a))
-	checkSize(len(dst), len(b))
+	CheckSize(len(dst), len(a))
+	CheckSize(len(dst), len(b))
 	for i := range dst {
 		dst[i] = a[i] + s*b[i]
 	}
@@ -62,7 +62,7 @@ func MAdd(dst, a []float64, s float64, b []float64) {
 // Map applies f to all elements of a list:
 // 	dst[i] = f(src[i])
 func Map(dst, src []float64, f func(float64) float64) {
-	checkSize(len(dst), len(src))
+	CheckSize(len(dst), len(src))
 	for i := range src {
 		dst[i] = f(src[i])
 	}
@@ -86,7 +86,7 @@ func MinMax(list []float64) (min float64, max float64) {
 // Mul multiplies by a constant:
 // 	dst[i] = s * a[i]
 func Mul(dst []float64, s float64, a []float64) {
-	checkSize(len(dst), len(a))
+	CheckSize(len(dst), len(a))
 	for i, a := range a {
 		dst[i] = s * a
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 
+	. "github.com/barnex/vectorstream"
 	"github.com/barnex/vectorstream/img"
 )
 

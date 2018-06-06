@@ -21,10 +21,10 @@ type Net interface {
 	Eval(dst, w, x []float64)
 }
 
-func netCheckSize(f Net, dst, w, x []float64) {
-	checkSize(len(dst), f.NumOut())
-	checkSize(len(w), f.NumWeight())
-	checkSize(len(x), f.NumIn())
+func NetCheckSize(f Net, dst, w, x []float64) {
+	CheckSize(len(dst), f.NumOut())
+	CheckSize(len(w), f.NumWeight())
+	CheckSize(len(x), f.NumIn())
 }
 
 func netPrintDim(f Net) {
