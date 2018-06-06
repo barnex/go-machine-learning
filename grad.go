@@ -1,10 +1,25 @@
 package vs
 
+// GradLoss calculates the gradient of loss(softmax(f)),
+// based on f's gradient of raw logits and the chain rule.
+func GradLoss(g []float64, f Net, w, x []float64, buf T) {
+
+}
+
+// NumGradLoss numerically approximates the gradient of loss(softmax(f)),
+// based on f.Eval()
+// Intended for testing.
+func NumGradLoss(g []float64, f Net, w, x []float64) {
+
+}
+
 // NumGrad numerically approximates f's gradient with respect to w.
-func NumGrad(y T, f Net, w, x []float64) {
+// The result is stored in g.
+// Intended for testing f's analytical Grad() implementation.
+func NumGrad(g T, f Net, w, x []float64) {
 	gnx, gny := gradSize(f)
-	checkSize(y.Size(0), gnx)
-	checkSize(y.Size(1), gny)
+	CheckSize(g.Size(0), gnx)
+	CheckSize(g.Size(1), gny)
 
 	const delta = 1. / (1024 * 1024)
 
@@ -23,8 +38,8 @@ func NumGrad(y T, f Net, w, x []float64) {
 		w[i] = backup
 
 		for j := 0; j < f.NumOut(); j++ {
-			y := y.Row(j)
-			y[i] = (y2[j] - y1[j]) / (2 * delta)
+			g := g.Row(j)
+			g[i] = (y2[j] - y1[j]) / (2 * delta)
 		}
 	}
 }
