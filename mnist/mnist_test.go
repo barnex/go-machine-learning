@@ -1,9 +1,9 @@
 package vs
 
 import (
-	"fmt"
-	. "github.com/barnex/vectorstream"
 	"testing"
+
+	. "github.com/barnex/vectorstream"
 )
 
 func TestMNIST1_Untrained(t *testing.T) {
@@ -15,5 +15,5 @@ func TestMNIST1_Untrained(t *testing.T) {
 		Randomize(W, 0.1)
 	}
 
-	fmt.Println(Accuracy(m, w, trainSet()), "/", len(trainSet()))
+	//fmt.Println(Accuracy(m, w, trainSet()), "/", len(trainSet()))
 }

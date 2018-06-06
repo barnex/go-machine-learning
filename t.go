@@ -9,14 +9,27 @@ func MakeT(rows, cols int) T {
 	return Reshape(make([]float64, cols*rows), rows, cols)
 }
 
-func Reshape(list []float64, rows, cols int) T {
-	CheckSize(len(list), rows*cols)
-	return T{list, Dim{rows, cols}}
+func Reshape(list []float64, nx, ny int) T {
+	CheckSize(len(list), nx*ny)
+	return T{list, Dim{nx, ny}}
 }
 
 // Len returns the total number of elements
 func (t *T) Len() int {
 	return len(t.list)
+}
+
+func (t *T) Size(dim int) int {
+	return t.size[dim]
+}
+
+// List returns all elements in a contiguous list.
+func (t *T) List() []float64 {
+	return t.list
+}
+
+func (t *T) Row(i int) []float64 {
+	return t.list[i*t.size[0] : (i+1)*t.size[0]]
 }
 
 //func (m Img) Print() {

@@ -6,7 +6,24 @@ import (
 	"github.com/barnex/vectorstream/test"
 )
 
-func TestLU(t *testing.T) {
+func TestLU_Grad(t *testing.T) {
+	f := NewLU(2, 2)
+
+	w := make([]float64, f.NumWeight())
+	Randomize(w, 1)
+	x := make([]float64, f.NumIn())
+	Randomize(x, 1)
+
+	have := MakeT(gradSize(f))
+	f.Grad(have, w, x)
+
+	want := MakeT(gradSize(f))
+	NumGrad(want, f, w, x)
+
+	test.Approxv(t, have.List(), want.List(), 1e-5)
+}
+
+func TestLU_Eval(t *testing.T) {
 	f := NewLU(2, 4)
 
 	w := make([]float64, 2*4+2)

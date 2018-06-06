@@ -7,9 +7,18 @@ import (
 	"runtime"
 )
 
+func Copy(a, b []float64) {
+	checkSize(len(a), len(b))
+	copy(a, b)
+}
+
 func CheckSize(a, b int) {
+	checkSize(a, b)
+}
+
+func checkSize(a, b int) {
 	if a != b {
-		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(1), a, b))
+		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(2), a, b))
 	}
 }
 

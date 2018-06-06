@@ -28,6 +28,14 @@ func Approxf(t *testing.T, have, want, tol float64) {
 	}
 }
 
+func Approxv(t *testing.T, have, want []float64, tol float64) {
+	t.Helper()
+	Eq(t, len(have), len(want))
+	for i := range have {
+		Approxf(t, have[i], want[i], tol)
+	}
+}
+
 func Eq(t *testing.T, have, want interface{}) {
 	t.Helper()
 	if !reflect.DeepEqual(have, want) {

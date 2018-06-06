@@ -6,8 +6,6 @@ import (
 
 type MNIST1 struct{}
 
-var _ Net = &MNIST1{}
-
 var digits = [10]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 const (
@@ -29,7 +27,6 @@ func (f *MNIST1) NumIn() int {
 }
 
 func (f *MNIST1) Eval(dst, w, x []float64) {
-	NetCheckSize(f, dst, w, x)
 	B := f.Bias(w)
 	for i := range dst {
 		W := f.Weight(w, i)

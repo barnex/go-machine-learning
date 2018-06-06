@@ -19,12 +19,16 @@ type Net interface {
 	// 	len(w) == NumWeight()
 	// 	len(x) == NumIn()
 	Eval(y, w, x []float64)
+
+	Grad(gy T, w, x []float64)
 }
 
 func NetCheckSize(f Net, y, w, x []float64) {
-	CheckSize(len(y), f.NumOut())
-	CheckSize(len(w), f.NumWeight())
-	CheckSize(len(x), f.NumIn())
+	if !(len(y) == f.NumOut() &&
+		len(w) == f.NumWeight() &&
+		len(x) == f.NumIn()) {
+		panic(fmt.Sprintf("size mismatch: have y:%v, w:%v, x:%v, want: y:%v, w:%v, x:%v", len(y), len(w), len(x), f.NumOut(), f.NumWeight(), f.NumIn()))
+	}
 }
 
 func netPrintDim(f Net) {

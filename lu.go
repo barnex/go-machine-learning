@@ -46,5 +46,9 @@ func (f *LU) Eval(y, w, x []float64) {
 }
 
 func (f *LU) Grad(y T, w, x []float64) {
-
+	for j := 0; j < y.Size(1); j++ {
+		g := y.Row(j)
+		Copy(f.Ai(g, j), x)
+		f.B(g)[j] = 1
+	}
 }
