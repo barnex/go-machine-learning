@@ -14,15 +14,15 @@ type Net interface {
 	NumIn() int
 
 	// Eval feeds input x through the network,
-	// and stores the raw, unnormalized output in dst.
-	// 	len(dst) == NumOut()
+	// and stores the raw, unnormalized output in y.
+	// 	len(y) == NumOut()
 	// 	len(w) == NumWeight()
 	// 	len(x) == NumIn()
-	Eval(dst, w, x []float64)
+	Eval(y, w, x []float64)
 }
 
-func NetCheckSize(f Net, dst, w, x []float64) {
-	CheckSize(len(dst), f.NumOut())
+func NetCheckSize(f Net, y, w, x []float64) {
+	CheckSize(len(y), f.NumOut())
 	CheckSize(len(w), f.NumWeight())
 	CheckSize(len(x), f.NumIn())
 }
