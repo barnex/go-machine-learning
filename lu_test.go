@@ -6,21 +6,62 @@ import (
 	"github.com/barnex/vectorstream/test"
 )
 
+func TestLU_GradLoss(t *testing.T) {
+	sizes := []Dim{
+		{2, 2},
+		{2, 5},
+		{5, 2},
+	}
+
+	for _, s := range sizes {
+		t.Run(s.String(), func(t *testing.T) {
+			f := NewLU(s[0], s[1])
+
+			w := make([]float64, f.NumWeight())
+			Randomize(w, 1)
+			x := make([]float64, f.NumIn())
+			Randomize(x, 1)
+			xl := LabeledVec{1, x}
+
+			have := make([]float64, f.NumOut())
+			GradLoss(have, f, w, xl, T{})
+
+			want := make([]float64, f.NumOut())
+			NumGradLoss(want, f, w, xl)
+
+			test.Approxv(t, have, want, 1e-5)
+		})
+	}
+}
+
 func TestLU_Grad(t *testing.T) {
-	f := NewLU(2, 2)
 
-	w := make([]float64, f.NumWeight())
-	Randomize(w, 1)
-	x := make([]float64, f.NumIn())
-	Randomize(x, 1)
+	sizes := []Dim{
+		{2, 2},
+		{2, 5},
+		{5, 2},
+		{1, 1},
+	}
 
-	have := MakeT(gradSize(f))
-	f.Grad(have, w, x)
+	for _, s := range sizes {
+		t.Run(s.String(), func(t *testing.T) {
+			f := NewLU(s[0], s[1])
 
-	want := MakeT(gradSize(f))
-	NumGrad(want, f, w, x)
+			w := make([]float64, f.NumWeight())
+			Randomize(w, 1)
+			x := make([]float64, f.NumIn())
+			Randomize(x, 1)
 
-	test.Approxv(t, have.List(), want.List(), 1e-5)
+			have := MakeT(gradSize(f))
+			f.Grad(have, w, x)
+
+			want := MakeT(gradSize(f))
+			NumGrad(want, f, w, x)
+
+			test.Approxv(t, have.List(), want.List(), 1e-5)
+		})
+	}
+
 }
 
 func TestLU_Eval(t *testing.T) {

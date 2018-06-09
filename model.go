@@ -14,7 +14,7 @@ func NewModel(f Net) *Model {
 }
 
 func (m *Model) Loss(xl []LabeledVec) float64 {
-	return Loss(m.F, m.W, xl)
+	return Loss(m.F, m.W, xl, nil)
 }
 
 func (m *Model) Infer(y, x []float64) {
