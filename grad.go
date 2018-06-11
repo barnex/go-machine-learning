@@ -2,6 +2,16 @@ package vs
 
 import "math"
 
+func AvgGradLoss(g []float64, f Net, w []float64, xl []LabeledVec, buf T) {
+	g1 := make([]float64, f.NumWeight())
+	Set(g, 0)
+	for _, xl := range xl {
+		GradLoss(g1, f, w, xl, buf)
+		Add(g, g, g1)
+	}
+	Mul(g, 1/float64(len(xl)), g)
+}
+
 // GradLoss calculates the gradient of loss(softmax(f)),
 // based on f's gradient of raw logits and the chain rule.
 func GradLoss(g []float64, f Net, w []float64, xl LabeledVec, buf T) {
@@ -20,7 +30,6 @@ func GradLoss(g []float64, f Net, w []float64, xl LabeledVec, buf T) {
 		den += math.Exp(F[j])
 	}
 	for i := range g {
-
 		nom := 0.0
 		for j := range F {
 			nom += math.Exp(F[j]) * buf.Row(j)[i]

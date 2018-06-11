@@ -6,6 +6,37 @@ import (
 	"github.com/barnex/vectorstream/test"
 )
 
+// A trivial learning test: learn the identity function (3x3).
+func TestLU_Train_Identity(t *testing.T) {
+	size := Dim{3, 3}
+
+	trainSet := []LabeledVec{
+		{0, []float64{1, 0, 0}},
+		{1, []float64{0, 1, 0}},
+		{2, []float64{0, 0, 1}},
+	}
+
+	f := NewLU(size[0], size[1])
+
+	w := make([]float64, f.NumWeight())
+	Set(w, 1)
+
+	GradDescent(f, w, trainSet, 100)
+
+	infer := make([]float64, f.NumOut())
+	Infer(infer, f, w, trainSet[0].X)
+	test.Approxv(t, infer, []float64{1, 0, 0}, 1e-30)
+
+	Infer(infer, f, w, trainSet[1].X)
+	test.Approxv(t, infer, []float64{0, 1, 0}, 1e-30)
+
+	Infer(infer, f, w, trainSet[2].X)
+	test.Approxv(t, infer, []float64{0, 0, 1}, 1e-30)
+
+	test.Eq(t, Accuracy(f, w, trainSet), 3)
+}
+
+// Test Gradient of Loss by comparing to numerical approximation.
 func TestLU_GradLoss(t *testing.T) {
 	sizes := []Dim{
 		{2, 2},
@@ -34,6 +65,7 @@ func TestLU_GradLoss(t *testing.T) {
 	}
 }
 
+// Test raw gradient by comparing to numerical approximation
 func TestLU_Grad(t *testing.T) {
 
 	sizes := []Dim{

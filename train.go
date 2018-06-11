@@ -1,20 +1,21 @@
 package vs
 
-func GradDescent(f, gll Net, w []float64, xl []LabeledVec, NStep int) {
+func GradDescent(f Net, w []float64, xl []LabeledVec, NStep int) {
 	const relRate = 1. / 16.
 
-	CheckSize(gll.NumIn(), f.NumIn())
-	CheckSize(gll.NumWeight(), f.NumWeight())
-	CheckSize(gll.NumOut(), f.NumWeight()) // output = grad_weight f
+	//	gll := makeGLL(f)
 
-	buf := make([]float64, gll.NumOut())
-	grad := make([]float64, gll.NumOut())
+	//CheckSize(gll.NumIn(), f.NumIn())
+	//CheckSize(gll.NumWeight(), f.NumWeight())
+	//CheckSize(gll.NumOut(), f.NumWeight()) // output = grad_weight f
+
+	grad := make([]float64, f.NumWeight())
 
 	for i := 0; i < NStep; i++ {
-		avgGrad(grad, gll, w, xl, buf)
+		AvgGradLoss(grad, f, w, xl, T{})
 		lG := Len(grad)
 		lW := Len(w)
-		rate := relRate * lG / lW
+		rate := relRate * lW / lG
 		MAdd(w, w, -rate, grad)
 
 		//for _, w := range m.w {
@@ -25,14 +26,20 @@ func GradDescent(f, gll Net, w []float64, xl []LabeledVec, NStep int) {
 	}
 }
 
-func avgGrad(grad []float64, gll Net, w []float64, xl []LabeledVec, buf []float64) {
-	Set(grad, 0)
-	for _, xl := range xl {
-		gll.Eval(buf, w, xl.X)
-		Add(grad, grad, buf)
+func makeGLL(f Net) func(dst, w []float64, xl []LabeledVec) {
+	return func(dst, w []float64, xl []LabeledVec) {
+		AvgGradLoss(dst, f, w, xl, T{})
 	}
-	Mul(grad, 1/float64(len(xl)), grad)
 }
+
+//func avgGrad(grad []float64, gll TFunc, w []float64, xl []LabeledVec, buf []float64) {
+//	Set(grad, 0)
+//	for _, xl := range xl {
+//		gll.Eval(buf, w, xl.X)
+//		Add(grad, grad, buf)
+//	}
+//	Mul(grad, 1/float64(len(xl)), grad)
+//}
 
 //func TrainDumb(m *Model1, trainingSet []LabeledImg) {
 //

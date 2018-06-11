@@ -34,3 +34,5 @@ func NetCheckSize(f Net, y, w, x []float64) {
 func netPrintDim(f Net) {
 	fmt.Printf("numout: %v, numweight: %v, numin: %v/n", f.NumOut(), f.NumWeight(), f.NumIn())
 }
+
+type BackProp func(dst, w, x []float64)
