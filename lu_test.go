@@ -21,17 +21,17 @@ func TestLU_Train_Identity(t *testing.T) {
 	w := make([]float64, f.NumWeight())
 	Set(w, 1)
 
-	GradDescent(f, w, trainSet, 100)
+	GradDescent(f, w, trainSet, 200)
 
 	infer := make([]float64, f.NumOut())
 	Infer(infer, f, w, trainSet[0].X)
-	test.Approxv(t, infer, []float64{1, 0, 0}, 1e-30)
+	test.Approxv(t, infer, []float64{1, 0, 0}, 1e-9)
 
 	Infer(infer, f, w, trainSet[1].X)
-	test.Approxv(t, infer, []float64{0, 1, 0}, 1e-30)
+	test.Approxv(t, infer, []float64{0, 1, 0}, 1e-9)
 
 	Infer(infer, f, w, trainSet[2].X)
-	test.Approxv(t, infer, []float64{0, 0, 1}, 1e-30)
+	test.Approxv(t, infer, []float64{0, 0, 1}, 1e-9)
 
 	test.Eq(t, Accuracy(f, w, trainSet), 3)
 }

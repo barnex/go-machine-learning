@@ -13,8 +13,16 @@ func NewModel(f Net) *Model {
 	}
 }
 
+func (m *Model) GradDescent(xl []LabeledVec, nStep int) {
+	GradDescent(m.F, m.W, xl, nStep)
+}
+
 func (m *Model) Loss(xl []LabeledVec) float64 {
 	return Loss(m.F, m.W, xl, nil)
+}
+
+func (m *Model) Accuracy(xl []LabeledVec) int {
+	return Accuracy(m.F, m.W, xl)
 }
 
 func (m *Model) Infer(y, x []float64) {

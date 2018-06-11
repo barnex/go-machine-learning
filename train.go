@@ -1,7 +1,7 @@
 package vs
 
-func GradDescent(f Net, w []float64, xl []LabeledVec, NStep int) {
-	const relRate = 1. / 16.
+func GradDescent(f Net, w []float64, xl []LabeledVec, nStep int) {
+	const relRate = 1. / 32.
 
 	//	gll := makeGLL(f)
 
@@ -11,7 +11,7 @@ func GradDescent(f Net, w []float64, xl []LabeledVec, NStep int) {
 
 	grad := make([]float64, f.NumWeight())
 
-	for i := 0; i < NStep; i++ {
+	for i := 0; i < nStep; i++ {
 		AvgGradLoss(grad, f, w, xl, T{})
 		lG := Len(grad)
 		lW := Len(w)
