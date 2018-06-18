@@ -32,3 +32,9 @@ func TestMV(t *testing.T) {
 	MulMV(&y, A, V{0, 0, 1})
 	test.Eqv(t, y, V{3, 6})
 }
+
+func TestMVPanic(t *testing.T) {
+	A := Reshape(V{1, 2, 3, 4, 5, 6}, Dim2{3, 2})
+	var y V
+	test.Panic(t, func() { MulMV(&y, A, V{1, 2}) }) // need 3-component vector, not 2
+}

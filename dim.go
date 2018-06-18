@@ -10,12 +10,16 @@ func (d Dim2) Len() int {
 	return d[0] * d[1]
 }
 
-//func (d Dim2) String() string {
-//	return fmt.Sprintf("(%v,%v)", d[0], d[1])
-//}
+func (d Dim2) String() string {
+	return fmt.Sprintf("(%v,%v)", d[0], d[1])
+}
 
-func CheckDim2(a, b Dim2) {
+func checkDim2(a, b Dim2) {
 	if a != b {
 		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(2), a, b))
 	}
+}
+
+func CheckDim2(a, b Dim2) {
+	checkDim2(a, b)
 }

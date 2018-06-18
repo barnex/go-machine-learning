@@ -1,6 +1,6 @@
 package vs
 
-// LU is a linear unit, performing:
+// LU is a linear unit, performing an affine transform:
 // 	y = a * x + b
 type LU struct {
 	nOut, nIn int
@@ -19,7 +19,7 @@ func (f *LU) numW() int     { return f.nIn * f.nOut }
 func (f *LU) numB() int     { return f.nOut }
 
 func (f *LU) Weights(theta V) M {
-	return Reshape(theta[:f.numW()], Dim2{f.nOut, f.nIn})
+	return Reshape(theta[:f.numW()], Dim2{f.nIn, f.nOut})
 }
 
 func (f *LU) Biases(w V) V {
@@ -28,13 +28,16 @@ func (f *LU) Biases(w V) V {
 }
 
 func (f *LU) Eval(y *V, theta, x V) {
-	MulMV(y, f.Weights(theta), f.Biases(theta))
+	MulMV(y, f.Weights(theta), x)
+	Add(y, *y, f.Biases(theta))
 }
 
-//func (f *LU) Grad(y T, w, x []float64) {
-//	for j := 0; j < y.Size(1); j++ {
-//		g := y.Row(j)
-//		Copy(f.Ai(g, j), x)
-//		f.B(g)[j] = 1
-//	}
-//}
+func (f *LU) Diff(y *M, theta, x V) {
+	AssureM(y, diffSize(f))
+	for j := 0; j < y.Size[1]; j++ {
+		g := y.Row(j)
+		w := f.Weights(g)
+		Copy(w.Row(j), x)
+		f.Biases(g)[j] = 1
+	}
+}

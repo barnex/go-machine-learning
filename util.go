@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-func Copy(a, b []float64) {
+func Copy(a, b V) {
 	checkSize(len(a), len(b))
 	copy(a, b)
 }

@@ -3,6 +3,10 @@ package vs
 // V is a 1-dimensional vector
 type V []float64
 
+func MakeV(length int) V {
+	return make(V, length)
+}
+
 // AssureV makes sure p points to a vector of the specified length.
 // If p == nil then a vector is allocated,
 // otherwise the size of the existing vector is checked.

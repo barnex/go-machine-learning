@@ -30,9 +30,20 @@ func Approxf(t *testing.T, have, want, tol float64) {
 
 func Approxv(t *testing.T, have, want []float64, tol float64) {
 	t.Helper()
-	Eq(t, len(have), len(want))
+
+	if len(have) != len(want) {
+		t.Errorf("vector size mismatch: have len: %v, want: %v", len(have), len(want))
+	}
+
+	ok := true
 	for i := range have {
-		Approxf(t, have[i], want[i], tol)
+		if math.Abs(have[i]-want[i]) > tol {
+			ok = false
+			break
+		}
+	}
+	if !ok {
+		t.Errorf("have: %v, want: %v", have, want)
 	}
 }
 
@@ -43,6 +54,8 @@ func Eq(t *testing.T, have, want interface{}) {
 	}
 }
 
+// Real fails the test if v is not a real number
+// (NaN or infinity).
 func Real(t *testing.T, v ...float64) {
 	t.Helper()
 	for _, v := range v {
@@ -50,4 +63,14 @@ func Real(t *testing.T, v ...float64) {
 			t.Errorf("have: %v", v)
 		}
 	}
+}
+
+// Panic fails the test if f does not panic.
+func Panic(t *testing.T, f func()) {
+	defer func() {
+		if p := recover(); p == nil {
+			t.Errorf("want panic")
+		}
+	}()
+	f()
 }
