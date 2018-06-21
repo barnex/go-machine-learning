@@ -1,92 +1,52 @@
 package vs
 
-//func AvgGradLoss(g []float64, f Net, w []float64, xl []LabeledVec, buf T) {
-//	g1 := make([]float64, f.NumWeight())
-//	Set(g, 0)
-//	for _, xl := range xl {
-//		GradLoss(g1, f, w, xl, buf)
-//		Add(g, g, g1)
-//	}
-//	Mul(g, 1/float64(len(xl)), g)
-//}
-//
-//// GradLoss calculates the gradient of loss(softmax(f)),
-//// based on f's gradient of raw logits and the chain rule.
-//func GradLoss(g []float64, f Net, w []float64, xl LabeledVec, buf T) {
-//	if buf.List() == nil { // TODO: isnil
-//		buf = MakeT(gradSize(f))
-//	}
-//
-//	x := xl.X
-//	c := xl.Label
-//	F := make([]float64, f.NumOut())
-//	f.Eval(F, w, x)
-//	f.Grad(buf, w, x)
-//
-//	den := 0.0
-//	for j := range F {
-//		den += math.Exp(F[j])
-//	}
-//	for i := range g {
-//		nom := 0.0
-//		for j := range F {
-//			nom += math.Exp(F[j]) * buf.Row(j)[i]
-//		}
-//		g[i] = -buf.Row(c)[i] + nom/den
-//	}
-//}
-//
-//// NumGradLoss numerically approximates the gradient of loss(softmax(f)),
-//// based on f.Eval(), f.Grad().
-//// Intended for testing.
-//func NumGradLoss(g []float64, f Net, w []float64, xl LabeledVec) {
-//
-//	CheckSize(len(g), f.NumOut())
-//	const delta = 1. / (1024 * 1024)
-//
-//	buf := make([]float64, f.NumOut())
-//	for i := range g {
-//		backup := w[i]
-//
-//		w[i] = backup - delta
-//		v1 := Loss1(f, w, xl, buf)
-//
-//		w[i] = backup + delta
-//		v2 := Loss1(f, w, xl, buf)
-//
-//		g[i] = (v2 - v1) / (2 * delta)
-//
-//		w[i] = backup
-//	}
-//}
+// numericDiff numerically ≈imates f's derivatives with respect to coord,
+// which must be w, x, or a subslice thereof.
+// The resulting dy is the Jacobian matrix:
+// 	dy[i][j] \≈ ∂f(w,x)[i] / ∂coord[j]
+func numericDiff(dy *M, f Func, w, x, coord V) {
+	AssureM(dy, Dim2{len(coord), f.NumOut()})
 
-// DiffNumerical numerically approximates f's derivatives with respect to w.
-// The result is stored in g.
-// Intended for testing f's analytical Grad() implementation.
-func DiffNumerical(g *M, f Net, w, x V) {
-	AssureM(g, diffSize(f))
-
-	const delta = 1. / (1024 * 1024)
+	const δ = 1. / (1024 * 1024)
 	var y1, y2 V
 
-	for i := range w {
-		backup := w[i]
+	for i := range coord {
+		backup := coord[i]
 
-		w[i] = backup - delta
+		coord[i] = backup - δ // left
 		f.Eval(&y1, w, x)
 
-		w[i] = backup + delta
+		coord[i] = backup + δ // right
 		f.Eval(&y2, w, x)
 
-		w[i] = backup
+		coord[i] = backup // restore
 
 		for j := 0; j < f.NumOut(); j++ {
-			g := g.Row(j)
-			g[i] = (y2[j] - y1[j]) / (2 * delta)
+			dy := dy.Row(j)
+			dy[i] = (y2[j] - y1[j]) / (2 * δ)
 		}
 	}
 }
 
-func diffSize(f Net) Dim2 {
-	return Dim2{f.NumParam(), f.NumOut()}
+// NumericDiffW numerically ≈imates f's derivatives wit respect to w.
+// The resulting dy is the Jacobian matrix:
+// 	dy[i][j] = ∂f(w,x)[i] / ∂w[j]
+// Intended for testing.
+func NumericDiffW(dy *M, f Func, w, x V) {
+	numericDiff(dy, f, w, x, w)
+}
+
+// NumericDiffX numerically ≈imates f's derivatives wit respect to x.
+// The resulting dy is the Jacobian matrix:
+// 	dy[i][j] = ∂f(w,x)[i] / ∂x[j]
+// Intended for testing.
+func NumericDiffX(dy *M, f Func, w, x V) {
+	numericDiff(dy, f, w, x, x)
+}
+
+func NumericDiffScalar(f func(float64) float64) func(float64) float64 {
+	return func(x float64) float64 {
+		const δ = 1. / (1024 * 1024)
+		return (f(x+δ) - f(x-δ)) / (2 * δ)
+	}
 }

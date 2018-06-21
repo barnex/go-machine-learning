@@ -1,7 +1,8 @@
 package vs
 
 // LU is a linear unit, performing an affine transform:
-// 	y = a * x + b
+// 	y = w * x + b
+// With parameters [w, b] (weights and biases).
 type LU struct {
 	nOut, nIn int
 }
@@ -12,14 +13,32 @@ func NewLU(nOut, nIn int) *LU {
 	return &LU{nIn: nIn, nOut: nOut}
 }
 
-func (f *LU) NumOut() int   { return f.nOut }
-func (f *LU) NumIn() int    { return f.nIn }
-func (f *LU) NumParam() int { return f.nOut*f.nIn + f.nOut }
-func (f *LU) numW() int     { return f.nIn * f.nOut }
-func (f *LU) numB() int     { return f.nOut }
+// Eval implements Func.
+func (f *LU) Eval(y *V, θ, x V) {
+	MulMV(y, f.Weights(θ), x)
+	Add(y, *y, f.Biases(θ))
+}
 
-func (f *LU) Weights(theta V) M {
-	return Reshape(theta[:f.numW()], Dim2{f.nIn, f.nOut})
+// DiffW implements Func.
+func (f *LU) DiffW(dy *M, θ, x V) {
+	AssureM(dy, Dim2{f.NumParam(), f.NumOut()})
+	for i := 0; i < dy.Rows(); i++ {
+		dyi := dy.Row(i)
+		Copy(f.Weights(dyi).Row(i), x)
+		f.Biases(dyi)[i] = 1
+	}
+}
+
+// DiffX implements Func.
+func (f *LU) DiffX(dy *M, θ, x V) {
+	AssureM(dy, Dim2{f.NumIn(), f.NumOut()})
+	for i := 0; i < dy.Rows(); i++ {
+		Copy(dy.Row(i), f.Weights(θ).Row(i))
+	}
+}
+
+func (f *LU) Weights(θ V) M {
+	return Reshape(θ[:f.numW()], Dim2{f.nIn, f.nOut})
 }
 
 func (f *LU) Biases(w V) V {
@@ -27,17 +46,8 @@ func (f *LU) Biases(w V) V {
 	return w[f.numW():]
 }
 
-func (f *LU) Eval(y *V, theta, x V) {
-	MulMV(y, f.Weights(theta), x)
-	Add(y, *y, f.Biases(theta))
-}
-
-func (f *LU) Diff(y *M, theta, x V) {
-	AssureM(y, diffSize(f))
-	for j := 0; j < y.Size[1]; j++ {
-		g := y.Row(j)
-		w := f.Weights(g)
-		Copy(w.Row(j), x)
-		f.Biases(g)[j] = 1
-	}
-}
+func (f *LU) NumOut() int   { return f.nOut }
+func (f *LU) NumIn() int    { return f.nIn }
+func (f *LU) NumParam() int { return f.nOut*f.nIn + f.nOut }
+func (f *LU) numW() int     { return f.nIn * f.nOut }
+func (f *LU) numB() int     { return f.nOut }

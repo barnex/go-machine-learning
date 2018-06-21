@@ -28,7 +28,7 @@ func Assert(test bool) {
 	}
 }
 
-func approxEq(a, b, tol float64) bool {
+func ApproxEq(a, b, tol float64) bool {
 	return math.Abs(a-b) < tol
 }
 

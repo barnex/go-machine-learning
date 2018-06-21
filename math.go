@@ -120,34 +120,3 @@ func Sum(list []float64) float64 {
 	}
 	return float64(sum)
 }
-
-//func NormalizeDistr(dst, src []float64) {
-//	N := float64(len(dst))
-//	iavg := (1 / (Sum(src) / N))
-//	for i := range src {
-//		dst[i] = src[i] * iavg
-//	}
-//}
-//func Avg(list []float64) float64 {
-//	return Sum(list) / float64(len(list))
-//}
-//func Add(dst, src []float64) {
-//	for i := range dst {
-//		dst[i] += src[i]
-//	}
-//}
-//
-//func AddConst(dst, src []float64, cnst float64) {
-//	for i := range dst {
-//		dst[i] = src[i] + cnst
-//	}
-//}
-//
-//func XEntropy(real, pred []float64) float64 {
-//	checkSize(real, pred)
-//	var sum float64
-//	for i := range pred {
-//		sum += float64(real[i]) * math.Log(float64(pred[i]))
-//	}
-//	return float64(-sum)
-//}

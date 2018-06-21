@@ -26,16 +26,20 @@ func AssureM(p *M, size Dim2) {
 }
 
 // Len returns the total number of elements.
-func (t *M) Len() int {
+func (t M) Len() int {
 	return len(t.List)
 }
 
-func (m *M) IsNil() bool {
+func (m M) IsNil() bool {
 	return m.Size == Dim2{} && m.List == nil
 }
 
-func (t *M) Row(i int) V {
+func (t M) Row(i int) V {
 	return t.List[i*t.Size[0] : (i+1)*t.Size[0]]
+}
+
+func (t M) Rows() int {
+	return t.Size[1]
 }
 
 func MulMV(y *V, A M, x V) {
