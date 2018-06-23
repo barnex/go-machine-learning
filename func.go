@@ -22,3 +22,8 @@ type Func interface {
 	// If dy==nil, it is allocated. Otherwise the size must fit.
 	DiffX(dy *M, w, x V)
 }
+
+// An OutFunc is the final output layer
+// TODO: specify
+type OutFunc interface {
+}

@@ -12,6 +12,4 @@ func (l *Layer) UpdateY() {
 	l.F.Eval(&l.Y, l.W, l.X)
 }
 
-func (l *Layer) UpdateJ() {
-
-}
+func (l *Layer) NumParam() int { return l.F.NumParam() }
