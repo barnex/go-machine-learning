@@ -9,8 +9,8 @@ import (
 
 func TestMath(t *testing.T) {
 	{
-		var dst V
-		Add(&dst, V{1, 2}, V{4, 5})
+		dst := MakeV(2)
+		Add(dst, V{1, 2}, V{4, 5})
 		test.Eqv(t, dst, V{5, 7})
 	}
 	test.Eq(t, ArgMax(V{1, 2, 3}), 2)

@@ -14,13 +14,13 @@ func NewLU(nOut, nIn int) *LU {
 }
 
 // Eval implements Func.
-func (f *LU) Eval(y *V, θ, x V) {
+func (f *LU) Eval(y V, θ, x V) {
 	MulMV(y, f.Weights(θ), x)
-	Add(y, *y, f.Biases(θ))
+	Add(y, y, f.Biases(θ))
 }
 
 // DiffW implements Func.
-func (f *LU) DiffW(dy *M, θ, x V) {
+func (f *LU) DiffW(dy M, θ, x V) {
 	AssureM(dy, Dim2{f.NumParam(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		dyi := dy.Row(i)
@@ -30,7 +30,7 @@ func (f *LU) DiffW(dy *M, θ, x V) {
 }
 
 // DiffX implements Func.
-func (f *LU) DiffX(dy *M, θ, x V) {
+func (f *LU) DiffX(dy M, θ, x V) {
 	AssureM(dy, Dim2{f.NumIn(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		Copy(dy.Row(i), f.Weights(θ).Row(i))

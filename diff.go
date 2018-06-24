@@ -1,23 +1,24 @@
 package vs
 
-// numericDiff numerically ≈imates f's derivatives with respect to coord,
+// numericDiff numerically approximates f's derivatives with respect to coord,
 // which must be w, x, or a subslice thereof.
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] \≈ ∂f(w,x)[i] / ∂coord[j]
-func numericDiff(dy *M, f Func, w, x, coord V) {
+func numericDiff(dy M, f Func, w, x, coord V) {
 	AssureM(dy, Dim2{len(coord), f.NumOut()})
 
 	const δ = 1. / (1024 * 1024)
-	var y1, y2 V
+	y1 := MakeV(f.NumOut())
+	y2 := MakeV(f.NumOut())
 
 	for i := range coord {
 		backup := coord[i]
 
 		coord[i] = backup - δ // left
-		f.Eval(&y1, w, x)
+		f.Eval(y1, w, x)
 
 		coord[i] = backup + δ // right
-		f.Eval(&y2, w, x)
+		f.Eval(y2, w, x)
 
 		coord[i] = backup // restore
 
@@ -32,7 +33,7 @@ func numericDiff(dy *M, f Func, w, x, coord V) {
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] = ∂f(w,x)[i] / ∂w[j]
 // Intended for testing.
-func NumericDiffW(dy *M, f Func, w, x V) {
+func NumericDiffW(dy M, f Func, w, x V) {
 	numericDiff(dy, f, w, x, w)
 }
 
@@ -40,7 +41,7 @@ func NumericDiffW(dy *M, f Func, w, x V) {
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] = ∂f(w,x)[i] / ∂x[j]
 // Intended for testing.
-func NumericDiffX(dy *M, f Func, w, x V) {
+func NumericDiffX(dy M, f Func, w, x V) {
 	numericDiff(dy, f, w, x, x)
 }
 

@@ -7,11 +7,11 @@ import (
 
 // Add adds a and b.
 // 	dst[i] = a[i] + b[i]
-func Add(dst *V, a, b V) {
+func Add(dst V, a, b V) {
 	AssureV(dst, len(a))
 	CheckSize(len(a), len(b))
-	for i := range *dst {
-		(*dst)[i] = a[i] + b[i]
+	for i := range dst {
+		dst[i] = a[i] + b[i]
 	}
 }
 

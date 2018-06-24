@@ -13,32 +13,32 @@ var stdSizes = []Dim2{
 	{1, 1},
 }
 
-func testDiffW(t *testing.T, f Func) {
+func testDiffW(t *testing.T, f DiffFunc) {
 	t.Helper()
 
 	w := randomV(f.NumParam())
 	x := randomV(f.NumIn())
 
-	var have M
-	f.DiffW(&have, w, x)
+	have := MakeM(diffWSize(f))
+	f.DiffW(have, w, x)
 
-	var want M
-	NumericDiffW(&want, f, w, x)
+	want := MakeM(diffWSize(f))
+	NumericDiffW(want, f, w, x)
 
 	test.Approxv(t, have.List, want.List, 1e-5)
 }
 
-func testDiffX(t *testing.T, f Func) {
+func testDiffX(t *testing.T, f DiffFunc) {
 	t.Helper()
 
 	w := randomV(f.NumParam())
 	x := randomV(f.NumIn())
 
-	var have M
-	f.DiffX(&have, w, x)
+	have := MakeM(diffXSize(f))
+	f.DiffX(have, w, x)
 
-	var want M
-	NumericDiffX(&want, f, w, x)
+	want := MakeM(diffXSize(f))
+	NumericDiffX(want, f, w, x)
 
 	test.Approxv(t, have.List, want.List, 1e-5)
 }

@@ -49,8 +49,8 @@ func TestLU_Eval(t *testing.T) {
 	}
 
 	for _, c := range tests {
-		var have V
-		f.Eval(&have, θ, c.x)
+		have := MakeV(f.NumOut())
+		f.Eval(have, θ, c.x)
 		test.Eqv(t, have, c.want)
 	}
 }

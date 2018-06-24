@@ -10,10 +10,7 @@ func MakeV(length int) V {
 // AssureV makes sure p points to a vector of the specified length.
 // If p == nil then a vector is allocated,
 // otherwise the size of the existing vector is checked.
-func AssureV(p *V, length int) {
-	if *p == nil {
-		*p = make(V, length)
-	}
+func AssureV(p V, length int) {
 	checkSize(p.Len(), length)
 }
 

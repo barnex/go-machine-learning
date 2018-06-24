@@ -18,10 +18,7 @@ func Reshape(list []float64, size Dim2) M {
 // AssureM makes sure p points to a matrix of the specified size.
 // If p == nil then a matrix is allocated,
 // otherwise the size of the existing matrix is checked.
-func AssureM(p *M, size Dim2) {
-	if p.IsNil() {
-		*p = MakeM(size)
-	}
+func AssureM(p M, size Dim2) {
 	checkDim2(p.Size, size)
 }
 
@@ -42,10 +39,9 @@ func (t M) Rows() int {
 	return t.Size[1]
 }
 
-func MulMV(y *V, A M, x V) {
+func MulMV(y V, A M, x V) {
 	AssureV(y, A.Size[1])
-	//CheckSize(A.Size[0], x.Len())
-	for i := range *y {
-		(*y)[i] = A.Row(i).Dot(x)
+	for i := range y {
+		y[i] = A.Row(i).Dot(x)
 	}
 }

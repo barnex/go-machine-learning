@@ -12,23 +12,23 @@ func NewActivation(nIn int, f ScalarFunc) *Activation {
 }
 
 // Eval implements Func.
-func (f *Activation) Eval(y *V, θ, x V) {
+func (f *Activation) Eval(y V, θ, x V) {
 	AssureV(y, len(x))
-	Map(*y, x, f.f.Eval)
+	Map(y, x, f.f.Eval)
 }
 
 // DiffW implements Func.
-func (f *Activation) DiffW(dy *M, θ, x V) {
+func (f *Activation) DiffW(dy M, θ, x V) {
 	AssureM(dy, Dim2{0, f.NumOut()})
 }
 
 // DiffX implements Func.
 // The result is a diagonal matrix,
 // thus very inefficient to multiply in a dense way.
-func (f *Activation) DiffX(dy *M, θ, x V) {
+func (f *Activation) DiffX(dy M, θ, x V) {
 
-	var y V
-	f.Eval(&y, θ, x) // TODO: remove
+	y := MakeV(f.NumOut())
+	f.Eval(y, θ, x) // TODO: remove
 
 	AssureM(dy, Dim2{f.nIn, f.nIn})
 	Set(dy.List, 0)
