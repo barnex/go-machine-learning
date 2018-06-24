@@ -29,7 +29,7 @@ func numericDiff(dy M, f Func, w, x, coord V) {
 	}
 }
 
-// NumericDiffW numerically ≈imates f's derivatives wit respect to w.
+// NumericDiffW numerically approximates f's derivatives wit respect to w.
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] = ∂f(w,x)[i] / ∂w[j]
 // Intended for testing.
@@ -37,7 +37,7 @@ func NumericDiffW(dy M, f Func, w, x V) {
 	numericDiff(dy, f, w, x, w)
 }
 
-// NumericDiffX numerically ≈imates f's derivatives wit respect to x.
+// NumericDiffX numerically approximates f's derivatives wit respect to x.
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] = ∂f(w,x)[i] / ∂x[j]
 // Intended for testing.
@@ -45,9 +45,26 @@ func NumericDiffX(dy M, f Func, w, x V) {
 	numericDiff(dy, f, w, x, x)
 }
 
-func NumericDiffScalar(f func(float64) float64) func(float64) float64 {
-	return func(x float64) float64 {
-		const δ = 1. / (1024 * 1024)
-		return (f(x+δ) - f(x-δ)) / (2 * δ)
+func NumericGrad(dy V, f *Net, x V, c int) {
+	AssureV(dy, f.NumParam())
+
+	const δ = 1. / (1024 * 1024)
+	w := f.w
+
+	yBuf := MakeV(f.NumOut())
+	dyBuf := MakeV(f.NumParam())
+
+	for i := range w {
+		backup := w[i]
+
+		w[i] = backup - δ // left
+		y1 := f.Backprop(dyBuf, yBuf, x, c)
+
+		w[i] = backup + δ // right
+		y2 := f.Backprop(dyBuf, yBuf, x, c)
+
+		w[i] = backup // restore
+
+		dy[i] = (y2 - y1) / (2 * δ)
 	}
 }

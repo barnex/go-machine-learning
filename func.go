@@ -11,6 +11,7 @@ type Func interface {
 	Eval(y V, w, x V)
 }
 
+// A DiffFunc is parametrized, differentiable vector-to-vector function.
 type DiffFunc interface {
 	Func
 
@@ -30,35 +31,6 @@ func diffWSize(f Func) Dim2 {
 func diffXSize(f Func) Dim2 {
 	return Dim2{f.NumIn(), f.NumOut()}
 }
-
-type LossFunc interface {
-	NumIn() int
-	Eval(x V, c int) float64
-}
-
-// TODO: move to numeric, then hide inside diffLossTheta
-func FixLabel(f LossFunc, c int) Func {
-	return MakeFunc(1, 0, f.NumIn(), func(y V, w, x V) {
-		AssureV(y, 1)
-		y[0] = f.Eval(x, c)
-	})
-}
-
-func MakeFunc(nOut, nParam, nIn int, f func(V, V, V)) Func {
-	return &makeFunc{nOut, nParam, nIn, f}
-}
-
-type makeFunc struct {
-	nOut, nParam, nIn int
-	f                 func(V, V, V)
-}
-
-var _ Func = (*makeFunc)(nil)
-
-func (f *makeFunc) NumOut() int        { return f.nOut }
-func (f *makeFunc) NumParam() int      { return f.nParam }
-func (f *makeFunc) NumIn() int         { return f.nIn }
-func (f *makeFunc) Eval(y V, w V, x V) { f.f(y, w, x) }
 
 // An OutFunc is the final output layer
 // TODO: specify
