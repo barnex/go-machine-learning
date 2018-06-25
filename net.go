@@ -31,75 +31,61 @@ func NewNet(layers ...DiffFunc) *Net {
 }
 
 func (n *Net) Eval(y, x V) {
-	// x -> f0 -> h[0]
-	// h[0] -> f1 -> h[1]
-	// h[1] -> f2 -> h[2]
-	// h[2] -> softmax -> y
+	n.f[0].Eval(n.h[0], n.wl[0], x) // first layer
 
-	// first layer
-	n.f[0].Eval(n.h[0], n.wl[0], x)
-
-	// other layers
-	for i := 1; i < len(n.f); i++ {
+	for i := 1; i < len(n.f); i++ { // other layers
 		n.f[i].Eval(n.h[i], n.wl[i], n.h[i-1]) // previous layer's output is this layer's input
 	}
 
-	// final softmax
-	softmax(y, n.h[n.top()])
+	softmax(y, n.h[n.top()]) // final softmax
+	/*
+	 x -> f0 -> h[0]
+	 h[0] -> f1 -> h[1]
+	 h[1] -> f2 -> h[2]
+	 h[2] -> softmax -> y
+	*/
 }
 
-// ∂f(w2, g(w1, x1)) / ∂w
-// = ( ∂f(w2, g(w1,x1))/∂w1 , ∂f(w2, g(w1,x1)) / ∂ w2 )
-//
-//  ∂f(w2, g(w1,x1))/∂w1
-//  = (∂f/∂g)*(∂g/w1)
 func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 
 	// y = softmax(f3(w3, f2(w2, ...f0(w0, x))))
 	n.Eval(y, x)
 
-	// dy = grad_y( -log( softmax( y ))) , y = h[top]
-	copyv(dy, y)
-	dy[c] -= 1
+	// J = grad_x( -log( softmax( y )_c)) , y = h[top]
+	J := MakeV(n.NumOut())
+	copyv(J, y)
+	J[c] -= 1
+
+	dyl := n.sliceParams(dy)
+	for i := n.top(); i > 0; i-- {
+		f := n.f[i]
+		wl := n.wl
+		hl := n.h
+		//dy := dyl[i]
+
+		// jacobian: weights to outputs
+		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
+		f.DiffW(JW, wl[i], hl[i-1])
+
+		// this layer's contribution to the gradient
+		mulVM(dyl[i], J, JW)
+
+		// Chain the layer below
+		JX := MakeM(Dim2{f.NumIn(), f.NumOut()})
+		f.DiffX(JX, wl[i], hl[i-1])
+		J2 := MakeV(f.NumIn())
+		mulVM(J2, J, JX)
+		J = J2
+	}
+
+	{
+		f := n.f[0]
+		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
+		f.DiffW(JW, n.wl[0], x)
+		mulVM(dyl[0], J, JW)
+	}
 
 	return -math.Log(y[c])
-
-	/*
-		J := MakeV(n.NumOut())
-		gradSoftXen(J, y, c) // J = grad_y of -log(softmax(y)), used as 1xnumOut Jacobian
-
-		dyl := n.sliceParams(dy)
-
-		for i := n.top(); i > 0; i-- {
-			f := n.f[i]
-			wl := n.wl
-			hl := n.h
-			//dy := dyl[i]
-
-			// jacobian: weights to outputs
-			JW := MakeM(Dim2{f.NumOut(), f.NumParam()})
-			f.DiffW(JW, wl[i], hl[i-1])
-
-			// this layer's contribution to the gradient
-			mulMV(dyl[i], JW, J)
-
-			// Chain the layer below
-			JX := MakeM(Dim2{f.NumOut(), f.NumIn()})
-			f.DiffX(JX, wl[i], hl[i-1])
-			J2 := MakeV(f.NumIn())
-			mulMV(J2, JX, J)
-			J = J2
-		}
-
-		{
-			f := n.f[0]
-			JW := MakeM(Dim2{f.NumOut(), f.NumParam()})
-			f.DiffW(JW, n.wl[0], x)
-			mulMV(dyl[0], JW, J)
-		}
-
-		return softXen(y, c)
-	*/
 }
 
 func (n *Net) NumOut() int {

@@ -10,7 +10,7 @@ import (
 func TestLU_DiffW(t *testing.T) {
 	for _, s := range stdSizes {
 		t.Run(s.String(), func(t *testing.T) {
-			f := NewLU(s[0], s[1])
+			f := LU(s[0], s[1])
 			testDiffW(t, f)
 		})
 	}
@@ -20,14 +20,14 @@ func TestLU_DiffW(t *testing.T) {
 func TestLU_DiffX(t *testing.T) {
 	for _, s := range stdSizes {
 		t.Run(s.String(), func(t *testing.T) {
-			f := NewLU(s[0], s[1])
+			f := LU(s[0], s[1])
 			testDiffX(t, f)
 		})
 	}
 }
 
 func TestLU_Eval(t *testing.T) {
-	f := NewLU(2, 4)
+	f := LU(2, 4)
 	θ := MakeV(2*4 + 2)
 
 	// A = [1 2 3 4]

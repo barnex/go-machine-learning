@@ -19,7 +19,11 @@ func TestM(t *testing.T) {
 }
 
 func TestMV(t *testing.T) {
-
+	/*
+		[ 1 2 3 ] [1]
+		[ 4 5 6 ] [0]
+		          [0]
+	*/
 	A := Reshape(V{1, 2, 3, 4, 5, 6}, Dim2{3, 2})
 	y := MakeV(2)
 
@@ -31,6 +35,21 @@ func TestMV(t *testing.T) {
 
 	mulMV(y, A, V{0, 0, 1})
 	test.Eqv(t, y, V{3, 6})
+}
+
+func TestVM(t *testing.T) {
+	/*
+		[1 0] [ 1 2 3 ]
+		      [ 4 5 6 ]
+	*/
+	A := Reshape(V{1, 2, 3, 4, 5, 6}, Dim2{3, 2})
+	y := MakeV(3)
+
+	mulVM(y, V{1, 0}, A)
+	test.Eqv(t, y, V{1, 2, 3})
+
+	mulVM(y, V{0, 1}, A)
+	test.Eqv(t, y, V{4, 5, 6})
 }
 
 func TestMVPanic(t *testing.T) {

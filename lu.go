@@ -1,26 +1,26 @@
 package vs
 
-// LU is a linear unit, performing an affine transform:
+// lu is a linear unit, performing an affine transform:
 // 	y = w * x + b
 // With parameters [w, b] (weights and biases).
-type LU struct {
+type lu struct {
 	nOut, nIn int
 }
 
-// NewLU constructs a linear unit
+// LU constructs a linear unit
 // with nOut outputs and nIn inputs.
-func NewLU(nOut, nIn int) *LU {
-	return &LU{nIn: nIn, nOut: nOut}
+func LU(nOut, nIn int) *lu {
+	return &lu{nIn: nIn, nOut: nOut}
 }
 
 // Eval implements Func.
-func (f *LU) Eval(y V, θ, x V) {
+func (f *lu) Eval(y V, θ, x V) {
 	mulMV(y, f.Weights(θ), x)
 	add(y, y, f.Biases(θ))
 }
 
 // DiffW implements Func.
-func (f *LU) DiffW(dy M, θ, x V) {
+func (f *lu) DiffW(dy M, θ, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		dyi := dy.Row(i)
@@ -30,24 +30,24 @@ func (f *LU) DiffW(dy M, θ, x V) {
 }
 
 // DiffX implements Func.
-func (f *LU) DiffX(dy M, θ, x V) {
+func (f *lu) DiffX(dy M, θ, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		copyv(dy.Row(i), f.Weights(θ).Row(i))
 	}
 }
 
-func (f *LU) Weights(θ V) M {
+func (f *lu) Weights(θ V) M {
 	return Reshape(θ[:f.numW()], Dim2{f.nIn, f.nOut})
 }
 
-func (f *LU) Biases(w V) V {
+func (f *lu) Biases(w V) V {
 	checkSize(w.Len(), f.NumParam())
 	return w[f.numW():]
 }
 
-func (f *LU) NumOut() int   { return f.nOut }
-func (f *LU) NumIn() int    { return f.nIn }
-func (f *LU) NumParam() int { return f.nOut*f.nIn + f.nOut }
-func (f *LU) numW() int     { return f.nIn * f.nOut }
-func (f *LU) numB() int     { return f.nOut }
+func (f *lu) NumOut() int   { return f.nOut }
+func (f *lu) NumIn() int    { return f.nIn }
+func (f *lu) NumParam() int { return f.nOut*f.nIn + f.nOut }
+func (f *lu) numW() int     { return f.nIn * f.nOut }
+func (f *lu) numB() int     { return f.nOut }

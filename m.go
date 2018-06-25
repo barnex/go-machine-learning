@@ -45,3 +45,21 @@ func mulMV(y V, A M, x V) {
 		y[i] = A.Row(i).Dot(x)
 	}
 }
+
+func mulVM(y V, x V, A M) {
+	assureV(y, A.Size[0])
+	assureV(x, A.Size[1])
+	for i := 0; i < A.Size[0]; i++ {
+		y[i] = 0
+		for j := 0; j < A.Size[1]; j++ {
+			y[i] += x[j] * A.Row(j)[i]
+		}
+	}
+	/*
+	   x: 2
+	   A: 2x3 = {3, 2}
+	   [x0 x1] [ a00 a01 a02 ]
+	           [ a10 a11 a12 ]
+	   y: 3
+	*/
+}

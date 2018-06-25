@@ -9,9 +9,9 @@ import (
 // Test feedforward of an XOR network.
 // deeplearningbook.org p. 171, adapted to use softmax.
 func TestXOR(t *testing.T) {
-	l2 := NewLU(2, 2)
+	l2 := LU(2, 2)
 	l1 := NewActivation(2, Re)
-	l0 := NewLU(2, 2)
+	l0 := LU(2, 2)
 	net := NewNet(l2, l1, l0)
 
 	// pre-trained weights from deeplearningbook.org p.171

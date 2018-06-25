@@ -43,20 +43,22 @@ func testDiffX(t *testing.T, f DiffFunc) {
 	test.Approxv(t, have.List, want.List, 1e-5)
 }
 
-func testGrad(t *testing.T, f *Net, c int) {
+func testGrad(t *testing.T, f *Net) {
 	t.Helper()
 
-	randomize(f.w, 1)
-	x := randomV(f.NumIn())
+	for c := 0; c < f.NumOut(); c++ {
+		randomize(f.w, 1)
+		x := randomV(f.NumIn())
 
-	buf := MakeV(f.NumOut())
-	have := MakeV(f.NumParam())
-	f.Backprop(have, buf, x, c)
+		buf := MakeV(f.NumOut())
+		have := MakeV(f.NumParam())
+		f.Backprop(have, buf, x, c)
 
-	want := MakeV(f.NumParam())
-	NumericGrad(want, f, x, c)
+		want := MakeV(f.NumParam())
+		NumericGrad(want, f, x, c)
 
-	test.Approxv(t, have, want, 1e-5)
+		test.Approxv(t, have, want, 1e-5)
+	}
 }
 
 func randomV(length int) V {
