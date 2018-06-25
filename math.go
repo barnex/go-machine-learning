@@ -5,18 +5,18 @@ import (
 	"math/rand"
 )
 
-// Add adds a and b.
+// add adds a and b.
 // 	dst[i] = a[i] + b[i]
-func Add(dst V, a, b V) {
-	AssureV(dst, len(a))
-	CheckSize(len(a), len(b))
+func add(dst V, a, b V) {
+	assureV(dst, len(a))
+	checkSize(len(a), len(b))
 	for i := range dst {
 		dst[i] = a[i] + b[i]
 	}
 }
 
-// ArgMax returns the index of the maximum value in list x.
-func ArgMax(x []float64) int {
+// argmax returns the index of the maximum value in list x.
+func argmax(x []float64) int {
 	maxX := x[0]
 	maxI := 0
 	for i, x := range x {
@@ -28,10 +28,10 @@ func ArgMax(x []float64) int {
 	return maxI
 }
 
-// Dot returns the dot product
+// dot returns the dot product
 // 	sum_i a[i]*b[i]
-func Dot(a, b []float64) float64 {
-	CheckSize(len(a), len(b))
+func dot(a, b []float64) float64 {
+	checkSize(len(a), len(b))
 	sum := 0.0
 	for i, a := range a {
 		sum += float64(a * b[i])
@@ -39,37 +39,37 @@ func Dot(a, b []float64) float64 {
 	return sum
 }
 
-// Len2 returns the length squared of vector x.
-func Len2(x []float64) float64 {
-	return Dot(x, x)
+// norm2 returns the length squared of vector x.
+func norm2(x []float64) float64 {
+	return dot(x, x)
 }
 
-// Len returns the length of vector x.
-func Len(x []float64) float64 {
-	return math.Sqrt(Dot(x, x))
+// norm returns the length of vector x.
+func norm(x []float64) float64 {
+	return math.Sqrt(dot(x, x))
 }
 
-// MAdd performs a multiply+add:
+// madd performs a multiply+add:
 // 	dst[i] = a[i] + s*b[i]
-func MAdd(dst, a []float64, s float64, b []float64) {
-	CheckSize(len(dst), len(a))
-	CheckSize(len(dst), len(b))
+func madd(dst, a []float64, s float64, b []float64) {
+	checkSize(len(dst), len(a))
+	checkSize(len(dst), len(b))
 	for i := range dst {
 		dst[i] = a[i] + s*b[i]
 	}
 }
 
-// Map applies f to all elements of a list:
+// mapf applies f to all elements of a list:
 // 	dst[i] = f(src[i])
-func Map(dst, src []float64, f func(float64) float64) {
-	CheckSize(len(dst), len(src))
+func mapf(dst, src []float64, f func(float64) float64) {
+	checkSize(len(dst), len(src))
 	for i := range src {
 		dst[i] = f(src[i])
 	}
 }
 
-// MinMax returns the minimum and maximum values.
-func MinMax(list []float64) (min float64, max float64) {
+// minmax returns the minimum and maximum values.
+func minmax(list []float64) (min float64, max float64) {
 	min = list[0]
 	max = list[0]
 	for _, v := range list {
@@ -83,40 +83,52 @@ func MinMax(list []float64) (min float64, max float64) {
 	return min, max
 }
 
-// Mul multiplies by a constant:
+// mul multiplies by a constant:
 // 	dst[i] = s * a[i]
-func Mul(dst []float64, s float64, a []float64) {
-	CheckSize(len(dst), len(a))
+func mul(dst []float64, s float64, a []float64) {
+	checkSize(len(dst), len(a))
 	for i, a := range a {
 		dst[i] = s * a
 	}
 }
 
-// Randomize populates dst with random numbers between -amplitude and +amplitude.
-func Randomize(dst []float64, amplitude float64) {
+// randomize populates dst with random numbers between -amplitude and +amplitude.
+func randomize(dst []float64, amplitude float64) {
 	ampl2 := amplitude * 2
 	for i := range dst {
 		dst[i] = (rand.Float64() - 0.5) * ampl2
 	}
 }
 
-// Set sets all elements to value v.
-func Set(dst []float64, v float64) {
+// set sets all elements to value v.
+func set(dst []float64, v float64) {
 	for i := range dst {
 		dst[i] = v
 	}
 }
 
-func SoftMax(dst, src []float64) {
-	Map(dst, src, math.Exp)
-	Mul(dst, 1/Sum(dst), dst)
+func softmax(dst, src []float64) {
+	mapf(dst, src, math.Exp)
+	mul(dst, 1/sum(dst), dst)
 }
 
-// Sum returns the sum of all elements.
-func Sum(list []float64) float64 {
+// sum returns the sum of all elements.
+func sum(list []float64) float64 {
 	var sum float64
 	for _, v := range list {
 		sum += float64(v)
 	}
 	return float64(sum)
+}
+
+// Cross-entropy of softmax
+func softXen(y V, c int) float64 {
+	buf := MakeV(len(y)) // TODO: don't alloc
+	softmax(buf, y)
+	return -math.Log(buf[c])
+}
+
+func gradSoftXen(grad, y V, c int) {
+	copyv(grad, y)
+	grad[c] -= 1
 }

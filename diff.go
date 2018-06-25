@@ -5,7 +5,7 @@ package vs
 // The resulting dy is the Jacobian matrix:
 // 	dy[i][j] \≈ ∂f(w,x)[i] / ∂coord[j]
 func numericDiff(dy M, f Func, w, x, coord V) {
-	AssureM(dy, Dim2{len(coord), f.NumOut()})
+	assureM(dy, Dim2{len(coord), f.NumOut()})
 
 	const δ = 1. / (1024 * 1024)
 	y1 := MakeV(f.NumOut())
@@ -46,7 +46,7 @@ func NumericDiffX(dy M, f Func, w, x V) {
 }
 
 func NumericGrad(dy V, f *Net, x V, c int) {
-	AssureV(dy, f.NumParam())
+	assureV(dy, f.NumParam())
 
 	const δ = 1. / (1024 * 1024)
 	w := f.w

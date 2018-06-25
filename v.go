@@ -7,15 +7,15 @@ func MakeV(length int) V {
 	return make(V, length)
 }
 
-// AssureV makes sure p points to a vector of the specified length.
+// assureV makes sure p points to a vector of the specified length.
 // If p == nil then a vector is allocated,
 // otherwise the size of the existing vector is checked.
-func AssureV(p V, length int) {
+func assureV(p V, length int) {
 	checkSize(p.Len(), length)
 }
 
 func (v V) Len() int { return len(v) }
 
 func (v V) Dot(b V) float64 {
-	return Dot(v, b)
+	return dot(v, b)
 }

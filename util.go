@@ -7,13 +7,9 @@ import (
 	"runtime"
 )
 
-func Copy(a, b V) {
+func copyv(a, b V) {
 	checkSize(len(a), len(b))
 	copy(a, b)
-}
-
-func CheckSize(a, b int) {
-	checkSize(a, b)
 }
 
 func checkSize(a, b int) {
@@ -22,13 +18,13 @@ func checkSize(a, b int) {
 	}
 }
 
-func Assert(test bool) {
+func assert(test bool) {
 	if !test {
 		panic(fmt.Sprintf("%v: assertion failed", caller(1)))
 	}
 }
 
-func ApproxEq(a, b, tol float64) bool {
+func approxEq(a, b, tol float64) bool {
 	return math.Abs(a-b) < tol
 }
 

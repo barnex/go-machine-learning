@@ -19,7 +19,3 @@ func checkDim2(a, b Dim2) {
 		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(2), a, b))
 	}
 }
-
-func CheckDim2(a, b Dim2) {
-	checkDim2(a, b)
-}

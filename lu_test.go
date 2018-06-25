@@ -34,8 +34,8 @@ func TestLU_Eval(t *testing.T) {
 	//     [5 6 7 8]
 	// B = [9 10]
 
-	Copy(f.Weights(θ).List, V{1, 2, 3, 4, 5, 6, 7, 8})
-	Copy(f.Biases(θ), V{9, 10})
+	copyv(f.Weights(θ).List, V{1, 2, 3, 4, 5, 6, 7, 8})
+	copyv(f.Biases(θ), V{9, 10})
 
 	tests := []struct {
 		x    V

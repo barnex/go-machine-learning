@@ -15,10 +15,10 @@ func TestXOR(t *testing.T) {
 	net := NewNet(l2, l1, l0)
 
 	// pre-trained weights from deeplearningbook.org p.171
-	Copy(l0.Weights(net.wl[0]).List, V{1, 1, 1, 1})
-	Copy(l0.Biases(net.wl[0]), V{0, -1})
-	Copy(l2.Weights(net.wl[2]).List, V{1, -2, -1, 2})
-	Copy(l2.Biases(net.wl[2]), V{0, 1})
+	copyv(l0.Weights(net.wl[0]).List, V{1, 1, 1, 1})
+	copyv(l0.Biases(net.wl[0]), V{0, -1})
+	copyv(l2.Weights(net.wl[2]).List, V{1, -2, -1, 2})
+	copyv(l2.Biases(net.wl[2]), V{0, 1})
 
 	cases := []struct {
 		x, want V
@@ -33,7 +33,7 @@ func TestXOR(t *testing.T) {
 	for _, c := range cases {
 		net.Eval(y, c.x)
 		want := MakeV(c.want.Len())
-		SoftMax(want, c.want)
+		softmax(want, c.want)
 		test.Eqv(t, y, want)
 	}
 }
