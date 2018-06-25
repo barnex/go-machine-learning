@@ -1,24 +1,38 @@
 package vs
 
 import (
+	"fmt"
 	"math"
 )
 
 type Net struct {
 	f  []DiffFunc
-	h  []V
-	j  []M
-	w  V // all weights, shared over the layers
-	wl []V
+	h  []V // buffer for intermediate results
+	j  []M // buffer for backprop jacobians
+	w  V   // all weights, shared over the layers
+	wl []V // weights per layer
 }
 
-// NewNet constructs a feedforward chain,
-// with a final softmax layer (implicit).
+// NewNet constructs a feedforward chain, with a final softmax function.
+// The layers are specified from output to input.
+// E.g.:
+// 	NewNet(LU(2, 5), ReLU(5, 20))
+// Applies LU(ReLU(x)), has 2 outputs and 20 inputs.
 func NewNet(layers ...DiffFunc) *Net {
-	n := &Net{f: layers}
+	// reverse layers
+	l := make([]DiffFunc, len(layers))
+	for i := range l {
+		l[i] = layers[len(l)-1-i]
+	}
+	checkLayers(l)
+	n := &Net{f: l}
 
 	// allocate parameters
-	n.w = MakeV(n.NumParam())
+	numP := 0
+	for _, l := range n.f {
+		numP += l.NumParam()
+	}
+	n.w = MakeV(numP)
 	n.wl = n.sliceParams(n.w)
 
 	// allocate hidden layers
@@ -28,6 +42,14 @@ func NewNet(layers ...DiffFunc) *Net {
 	}
 
 	return n
+}
+
+func checkLayers(l []DiffFunc) {
+	for i := 1; i < len(l); i++ {
+		if l[i].NumIn() != l[i-1].NumOut() {
+			panic(fmt.Sprintf("net size mismatch: layer %v has %v inputs, but layer %v has %v outputs", i, l[i].NumIn(), i-1, l[i-1].NumOut()))
+		}
+	}
 }
 
 func (n *Net) Eval(y, x V) {
@@ -47,30 +69,27 @@ func (n *Net) Eval(y, x V) {
 }
 
 func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
-
-	// y = softmax(f3(w3, f2(w2, ...f0(w0, x))))
 	n.Eval(y, x)
 
-	// J = grad_x( -log( softmax( y )_c)) , y = h[top]
+	// softmax jacobian J = grad_x( loss )
 	J := MakeV(n.NumOut())
 	copyv(J, y)
 	J[c] -= 1
 
+	// chain rule
 	dyl := n.sliceParams(dy)
 	for i := n.top(); i > 0; i-- {
 		f := n.f[i]
 		wl := n.wl
 		hl := n.h
-		//dy := dyl[i]
 
-		// jacobian: weights to outputs
+		// JW: weights to outputs
 		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
 		f.DiffW(JW, wl[i], hl[i-1])
-
 		// this layer's contribution to the gradient
 		mulVM(dyl[i], J, JW)
 
-		// Chain the layer below
+		// JX: inputs to outputs
 		JX := MakeM(Dim2{f.NumIn(), f.NumOut()})
 		f.DiffX(JX, wl[i], hl[i-1])
 		J2 := MakeV(f.NumIn())
@@ -78,6 +97,7 @@ func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 		J = J2
 	}
 
+	// input layer
 	{
 		f := n.f[0]
 		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
@@ -88,25 +108,10 @@ func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 	return -math.Log(y[c])
 }
 
-func (n *Net) NumOut() int {
-	return n.f[n.top()].NumOut()
-}
-
-func (n *Net) Params() V {
-	return n.w
-}
-
-func (n *Net) NumParam() int {
-	p := 0
-	for _, l := range n.f {
-		p += l.NumParam()
-	}
-	return p
-}
-
-func (n *Net) NumIn() int {
-	return n.f[0].NumIn()
-}
+func (n *Net) NumOut() int   { return n.f[n.top()].NumOut() }
+func (n *Net) NumIn() int    { return n.f[0].NumIn() }
+func (n *Net) NumParam() int { return len(n.w) }
+func (n *Net) Params() V     { return n.w }
 
 func (N *Net) sliceParams(w V) []V {
 	wl := make([]V, len(N.f))
