@@ -6,24 +6,14 @@ import (
 	"github.com/barnex/vectorstream/test"
 )
 
-// Test raw derivatives by comparing to numerical ≈imation
-func TestLU_DiffW(t *testing.T) {
-	for _, s := range stdSizes {
-		t.Run(s.String(), func(t *testing.T) {
-			f := LU(s[0], s[1])
-			testDiffW(t, f)
-		})
-	}
-}
-
-// Test raw derivatives by comparing to numerical ≈imation
-func TestLU_DiffX(t *testing.T) {
-	for _, s := range stdSizes {
-		t.Run(s.String(), func(t *testing.T) {
-			f := LU(s[0], s[1])
-			testDiffX(t, f)
-		})
-	}
+// Test raw derivatives by comparing to numerical approximation
+func TestLU_Diff(t *testing.T) {
+	testDiffW(t, LU(10, 10))
+	testDiffW(t, LU(2, 10))
+	testDiffW(t, LU(10, 2))
+	testDiffX(t, LU(10, 10))
+	testDiffX(t, LU(2, 10))
+	testDiffX(t, LU(10, 2))
 }
 
 func TestLU_Eval(t *testing.T) {
