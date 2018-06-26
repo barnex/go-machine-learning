@@ -132,3 +132,17 @@ func gradSoftXen(grad, y V, c int) {
 	copyv(grad, y)
 	grad[c] -= 1
 }
+
+func re(x float64) float64 {
+	if x > 0 {
+		return x
+	}
+	return 0
+}
+
+func step(x float64) float64 {
+	if x > 0 {
+		return 1
+	}
+	return 0
+}

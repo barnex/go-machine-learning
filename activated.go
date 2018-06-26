@@ -1,45 +1,49 @@
 package vs
 
-type Activated struct {
-	F          DiffFunc
-	Activation ScalarFunc
+// withActivation wraps a function with an element-wise activation function. E.g.:
+// 	Re(LU(1,2))
+// wraps rectifier activation around an linear unit, yielding a ReLU unit.
+type withActivation struct {
+	F              DiffFunc
+	Activation     func(float64) float64
+	DiffActivation func(float64) float64
 }
 
-var _ Func = (*Activated)(nil)
+// Re wraps a function with a linear rectifier activation:
+// 	Re(f(x)) = max(0, f(x))
+func Re(f DiffFunc) DiffFunc {
+	return &withActivation{F: f, Activation: re, DiffActivation: step}
+}
 
-func (f *Activated) NumOut() int   { return f.F.NumOut() }
-func (f *Activated) NumParam() int { return f.F.NumParam() }
-func (f *Activated) NumIn() int    { return f.F.NumIn() }
+func (f *withActivation) NumOut() int   { return f.F.NumOut() }
+func (f *withActivation) NumParam() int { return f.F.NumParam() }
+func (f *withActivation) NumIn() int    { return f.F.NumIn() }
 
-func (f *Activated) Eval(y V, w, x V) {
+func (f *withActivation) Eval(y V, w, x V) {
 	f.F.Eval(y, w, x)
-	mapf(y, y, f.Activation.Eval)
+	mapf(y, y, f.Activation)
 }
 
-func (f *Activated) DiffX(dy M, y, w, x V) {
+func (f *withActivation) DiffX(dy M, y, w, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
 	f.F.DiffX(dy, y, w, x)
 
 	for i := 0; i < dy.Size[1]; i++ {
 		dyi := dy.Row(i)
 		for j := 0; j < dy.Size[0]; j++ {
-			dyi[j] *= f.Activation.Diff(y[i])
+			dyi[j] *= f.DiffActivation(y[i])
 		}
 	}
 }
 
-func (f *Activated) DiffW(dy M, y, w, x V) {
+func (f *withActivation) DiffW(dy M, y, w, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
 	f.F.DiffW(dy, y, w, x)
 
 	for i := 0; i < dy.Size[1]; i++ {
 		dyi := dy.Row(i)
 		for j := 0; j < dy.Size[0]; j++ {
-			dyi[j] *= f.Activation.Diff(y[i])
+			dyi[j] *= f.DiffActivation(y[i])
 		}
 	}
-}
-
-func ReLU(nOut, nIn int) *Activated {
-	return &Activated{F: LU(nOut, nIn), Activation: Re}
 }
