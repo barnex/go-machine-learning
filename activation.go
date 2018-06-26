@@ -1,8 +1,6 @@
 package vs
 
 // withActivation wraps a function with an element-wise activation function. E.g.:
-// 	Re(LU(1,2))
-// wraps rectifier activation around an linear unit, yielding a ReLU unit.
 type withActivation struct {
 	F              DiffFunc
 	Activation     func(float64) float64
@@ -11,6 +9,9 @@ type withActivation struct {
 
 // Re wraps a function with a linear rectifier activation:
 // 	Re(f(x)) = max(0, f(x))
+// E.g.:
+// 	Re(LU(1,2))
+// yields a ReLU unit.
 func Re(f DiffFunc) DiffFunc {
 	return &withActivation{F: f, Activation: re, DiffActivation: step}
 }

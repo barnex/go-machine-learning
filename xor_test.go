@@ -20,6 +20,7 @@ func TestXOR(t *testing.T) {
 	copyv(l1.Weights(net.wl[1]).List, V{1, -2, -1, 2})
 	copyv(l1.Biases(net.wl[1]), V{0, 1})
 
+	// Test evaluation
 	cases := []struct {
 		x, want V
 	}{
@@ -37,5 +38,6 @@ func TestXOR(t *testing.T) {
 		test.Eqv(t, y, want)
 	}
 
+	// Test backprop
 	testGrad(t, net)
 }
