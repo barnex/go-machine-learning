@@ -25,4 +25,8 @@ func TestNet_Backprop(t *testing.T) {
 	testGrad(t, NewNet(LU(5, 2)))
 	testGrad(t, NewNet(Unit(5), Unit(5), LU(5, 20), Unit(20)))
 	testGrad(t, NewNet(LU(2, 5), Unit(5), LU(5, 20)))
+
+	testGrad(t, NewNet(ReLU(2, 5)))
+	testGrad(t, NewNet(ReLU(2, 5), ReLU(5, 20)))
+	testGrad(t, NewNet(ReLU(2, 5), ReLU(5, 5), ReLU(5, 20)))
 }

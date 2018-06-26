@@ -1,7 +1,7 @@
 package vs
 
 type Activated struct {
-	F          Func
+	F          DiffFunc
 	Activation ScalarFunc
 }
 
@@ -16,19 +16,28 @@ func (f *Activated) Eval(y V, w, x V) {
 	mapf(y, y, f.Activation.Eval)
 }
 
-func (f *Activated) DiffW(dy M, w, x V) {
-	//	f.F.DiffW(dy, w, x)
-	//
-	//	for i := 0; i < dy.Size[1]; i++ {
-	//		dyi := dy.Row(i)
-	//		for j := 0; j < dy.Size[0]; j++ {
-	//			dyi[j] *= f.Activation.Diff(y[i])
-	//		}
-	//	}
+func (f *Activated) DiffX(dy M, y, w, x V) {
+	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
+	f.F.DiffX(dy, y, w, x)
+
+	for i := 0; i < dy.Size[1]; i++ {
+		dyi := dy.Row(i)
+		for j := 0; j < dy.Size[0]; j++ {
+			dyi[j] *= f.Activation.Diff(y[i])
+		}
+	}
 }
 
-func (f *Activated) DiffX(dy *M, w, x V) {
+func (f *Activated) DiffW(dy M, y, w, x V) {
+	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
+	f.F.DiffW(dy, y, w, x)
 
+	for i := 0; i < dy.Size[1]; i++ {
+		dyi := dy.Row(i)
+		for j := 0; j < dy.Size[0]; j++ {
+			dyi[j] *= f.Activation.Diff(y[i])
+		}
+	}
 }
 
 func ReLU(nOut, nIn int) *Activated {
