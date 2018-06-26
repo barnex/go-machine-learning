@@ -20,7 +20,7 @@ func (f *lu) Eval(y V, θ, x V) {
 }
 
 // DiffW implements Func.
-func (f *lu) DiffW(dy M, θ, x V) {
+func (f *lu) DiffW(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		dyi := dy.Row(i)
@@ -30,7 +30,7 @@ func (f *lu) DiffW(dy M, θ, x V) {
 }
 
 // DiffX implements Func.
-func (f *lu) DiffX(dy M, θ, x V) {
+func (f *lu) DiffX(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
 	for i := 0; i < dy.Rows(); i++ {
 		copyv(dy.Row(i), f.Weights(θ).Row(i))

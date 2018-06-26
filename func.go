@@ -17,11 +17,11 @@ type DiffFunc interface {
 
 	// DiffW computes the derivates (Jacobian matrix) with respect to w:
 	// 	dy[i][j] = (∂f(w,x)[i] / ∂w[j])
-	DiffW(dy M, w, x V)
+	DiffW(dy M, y, w, x V)
 
 	// DiffW computes the derivates (Jacobian matrix) with respect to x:
 	// 	dy[i][j] = (∂f(w,x)[i] / ∂x[j])
-	DiffX(dy M, w, x V)
+	DiffX(dy M, y, w, x V)
 }
 
 func diffWSize(f Func) Dim2 {

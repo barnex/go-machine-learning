@@ -36,4 +36,6 @@ func TestXOR(t *testing.T) {
 		softmax(want, c.want)
 		test.Eqv(t, y, want)
 	}
+
+	testGrad(t, net)
 }

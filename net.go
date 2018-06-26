@@ -85,13 +85,13 @@ func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 
 		// JW: weights to outputs
 		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
-		f.DiffW(JW, wl[i], hl[i-1])
+		f.DiffW(JW, hl[i], wl[i], hl[i-1])
 		// this layer's contribution to the gradient
 		mulVM(dyl[i], J, JW)
 
 		// JX: inputs to outputs
 		JX := MakeM(Dim2{f.NumIn(), f.NumOut()})
-		f.DiffX(JX, wl[i], hl[i-1])
+		f.DiffX(JX, hl[i], wl[i], hl[i-1])
 		J2 := MakeV(f.NumIn())
 		mulVM(J2, J, JX)
 		J = J2
@@ -101,7 +101,7 @@ func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 	{
 		f := n.f[0]
 		JW := MakeM(Dim2{f.NumParam(), f.NumOut()})
-		f.DiffW(JW, n.wl[0], x)
+		f.DiffW(JW, n.h[0], n.wl[0], x)
 		mulVM(dyl[0], J, JW)
 	}
 

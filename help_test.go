@@ -18,9 +18,11 @@ func testDiffW(t *testing.T, f DiffFunc) {
 
 	w := randomV(f.NumParam())
 	x := randomV(f.NumIn())
+	y := MakeV(f.NumOut())
+	f.Eval(y, w, x)
 
 	have := MakeM(diffWSize(f))
-	f.DiffW(have, w, x)
+	f.DiffW(have, y, w, x)
 
 	want := MakeM(diffWSize(f))
 	NumericDiffW(want, f, w, x)
@@ -33,9 +35,11 @@ func testDiffX(t *testing.T, f DiffFunc) {
 
 	w := randomV(f.NumParam())
 	x := randomV(f.NumIn())
+	y := MakeV(f.NumOut())
+	f.Eval(y, w, x)
 
 	have := MakeM(diffXSize(f))
-	f.DiffX(have, w, x)
+	f.DiffX(have, y, w, x)
 
 	want := MakeM(diffXSize(f))
 	NumericDiffX(want, f, w, x)
