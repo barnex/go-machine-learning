@@ -6,6 +6,14 @@ import (
 	"github.com/barnex/vectorstream/test"
 )
 
+func testAccuracy(t *testing.T, n *Net, set []LV, want float64) {
+	t.Helper()
+	have := Accuracy(n, set)
+	if have < want {
+		t.Errorf("accuracy: have: %v, want: %v", have, want)
+	}
+}
+
 func testDiffW(t *testing.T, f DiffFunc) {
 	t.Helper()
 
