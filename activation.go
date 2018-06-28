@@ -16,6 +16,22 @@ func Re(f DiffFunc) DiffFunc {
 	return &withActivation{F: f, Activation: re, DiffActivation: step}
 }
 
+func LeakyRe(f DiffFunc, leak float64) DiffFunc {
+	act := func(x float64) float64 {
+		if x > 0 {
+			return x
+		}
+		return leak * x
+	}
+	diff := func(x float64) float64 {
+		if x > 0 {
+			return 1
+		}
+		return leak
+	}
+	return &withActivation{F: f, Activation: act, DiffActivation: diff}
+}
+
 func (f *withActivation) NumOut() int   { return f.F.NumOut() }
 func (f *withActivation) NumParam() int { return f.F.NumParam() }
 func (f *withActivation) NumIn() int    { return f.F.NumIn() }

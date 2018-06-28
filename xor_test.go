@@ -1,10 +1,56 @@
 package vs
 
 import (
+	"bufio"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/barnex/vectorstream/test"
 )
+
+// Like TestXOR_Eval, but with training.
+func TestXOR_Training2(t *testing.T) {
+	l1 := LU(2, 2)
+	lu0 := LU(2, 2)
+	//l0 := LeakyRe(lu0, 0.09)
+	l0 := Re(lu0)
+	net := NewNet(l1, l0)
+
+	randomize(net.Params(), .05)
+	set(lu0.Biases(net.LParams(0)), .1)
+	set(l1.Biases(net.LParams(1)), .1)
+	madd(net.Params(), net.Params(), .05, randomV(net.NumParam()))
+
+	set := []LV{
+		{1, V{0, 0}},
+		{0, V{0, 1}},
+		{0, V{1, 0}},
+		{1, V{1, 1}},
+	}
+
+	f, err := os.Create("fit.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	buf := bufio.NewWriter(f)
+	defer buf.Flush()
+
+	for i := 0; i < 1000; i++ {
+		loss := GradStep(net, set, 0.1)
+
+		if i%8 == 0 {
+			fmt.Fprint(buf, loss, " ", Accuracy(net, set))
+			for _, p := range net.Params() {
+				fmt.Fprint(buf, " ", p)
+			}
+			fmt.Fprintln(buf)
+		}
+	}
+
+	testAccuracy(t, net, set, 1.0)
+}
 
 // Like TestXOR_Eval, but with training.
 func TestXOR_Training(t *testing.T) {
@@ -22,7 +68,7 @@ func TestXOR_Training(t *testing.T) {
 	copyv(l1.Weights(net.wl[1]).List, V{1, -2, -1, 2})
 	copyv(l1.Biases(net.wl[1]), V{0, 1})
 
-	madd(net.Params(), net.Params(), 1, randomV(net.NumParam()))
+	madd(net.Params(), net.Params(), .5, randomV(net.NumParam()))
 
 	set := []LV{
 		{1, V{0, 0}},
