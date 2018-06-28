@@ -108,10 +108,11 @@ func (n *Net) Backprop(dy, y V, x V, c int) (loss float64) {
 	return -math.Log(y[c])
 }
 
-func (n *Net) NumOut() int   { return n.f[n.top()].NumOut() }
-func (n *Net) NumIn() int    { return n.f[0].NumIn() }
-func (n *Net) NumParam() int { return len(n.w) }
-func (n *Net) Params() V     { return n.w }
+func (n *Net) NumOut() int         { return n.f[n.top()].NumOut() }
+func (n *Net) NumIn() int          { return n.f[0].NumIn() }
+func (n *Net) NumParam() int       { return len(n.w) }
+func (n *Net) Params() V           { return n.w }
+func (n *Net) LParams(layer int) V { return n.wl[layer] }
 
 func (N *Net) sliceParams(w V) []V {
 	wl := make([]V, len(N.f))

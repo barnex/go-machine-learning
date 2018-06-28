@@ -16,7 +16,7 @@ func GradStep(n *Net, set []LV, rate float64) (avgLoss float64) {
 	}
 
 	N := float64(len(set))
-	madd(n.Params(), n.Params(), rate/N, step)
+	madd(n.Params(), n.Params(), -rate/N, step)
 	return totalLoss / N
 }
 

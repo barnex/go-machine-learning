@@ -8,19 +8,33 @@ import (
 
 // Like TestXOR_Eval, but with training.
 func TestXOR_Training(t *testing.T) {
-	t.Skip("TODO")
 	l1 := LU(2, 2)
 	lu0 := LU(2, 2)
 	l0 := Re(lu0)
 	net := NewNet(l1, l0)
 
-	randomize(net.Params(), .1)
+	//randomize(net.Params(), .01)
+	//set(lu0.Biases(net.LParams(0)), .1)
+
+	// pre-trained weights + strong randomization
+	copyv(lu0.Weights(net.wl[0]).List, V{1, 1, 1, 1})
+	copyv(lu0.Biases(net.wl[0]), V{0, -1})
+	copyv(l1.Weights(net.wl[1]).List, V{1, -2, -1, 2})
+	copyv(l1.Biases(net.wl[1]), V{0, 1})
+
+	madd(net.Params(), net.Params(), 1, randomV(net.NumParam()))
 
 	set := []LV{
-		{0, V{0, 0}},
-		{1, V{0, 1}},
-		{1, V{1, 0}},
-		{0, V{1, 1}},
+		{1, V{0, 0}},
+		{0, V{0, 1}},
+		{0, V{1, 0}},
+		{1, V{1, 1}},
+	}
+
+	for i := 0; i < 100; i++ {
+		//loss := GradStep(net, set, 0.05)
+		GradStep(net, set, 0.05)
+		//fmt.Println(loss, Accuracy(net, set))
 	}
 
 	testAccuracy(t, net, set, 1.0)
