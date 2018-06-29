@@ -52,7 +52,7 @@ func testGrad(t *testing.T, f *Net) {
 	t.Helper()
 
 	for c := 0; c < f.NumOut(); c++ {
-		randomize(f.w, 1)
+		Randomize(f.w, 1)
 		x := randomV(f.NumIn())
 
 		buf := MakeV(f.NumOut())
@@ -68,7 +68,7 @@ func testGrad(t *testing.T, f *Net) {
 
 func randomV(length int) V {
 	y := MakeV(length)
-	randomize(y, 1)
+	Randomize(y, 1)
 	return y
 }
 

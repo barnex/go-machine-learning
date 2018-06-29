@@ -92,8 +92,8 @@ func mul(dst []float64, s float64, a []float64) {
 	}
 }
 
-// randomize populates dst with random numbers between -amplitude and +amplitude.
-func randomize(dst []float64, amplitude float64) {
+// Randomize populates dst with random numbers between -amplitude and +amplitude.
+func Randomize(dst []float64, amplitude float64) {
 	ampl2 := amplitude * 2
 	for i := range dst {
 		dst[i] = (rand.Float64() - 0.5) * ampl2

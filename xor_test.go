@@ -13,11 +13,11 @@ import (
 func TestXOR_Training2(t *testing.T) {
 	l1 := LU(2, 2)
 	lu0 := LU(2, 2)
-	//l0 := LeakyRe(lu0, 0.09)
-	l0 := Re(lu0)
+	l0 := LeakyRe(lu0, 0.05)
+	//l0 := Re(lu0)
 	net := NewNet(l1, l0)
 
-	randomize(net.Params(), .05)
+	Randomize(net.Params(), .05)
 	set(lu0.Biases(net.LParams(0)), .1)
 	set(l1.Biases(net.LParams(1)), .1)
 	madd(net.Params(), net.Params(), .05, randomV(net.NumParam()))

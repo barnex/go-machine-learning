@@ -1,5 +1,10 @@
 package vs
 
+import (
+	"log"
+	"math/rand"
+)
+
 func GradDescent(n *Net, s TrainingSet, rate float64, nStep int) {
 
 }
@@ -33,8 +38,25 @@ func Accuracy(n *Net, set []LV) float64 {
 }
 
 type TrainingSet struct {
-	byLabel [][]V
+	ByLabel [][]V
 	pos     int
 }
 
-//func(s*TrainingSet) Get()
+func (s *TrainingSet) Get() []LV {
+	lv := make([]LV, len(s.ByLabel))
+	for i := range lv {
+		lv[i] = LV{Label: i, V: s.ByLabel[i][s.pos]}
+	}
+	s.pos++
+	if s.pos == len(s.ByLabel[0]) {
+		s.pos = 0
+		log.Println("wrapping set")
+	}
+	return lv
+}
+
+func (s *TrainingSet) Shuffle() {
+	for _, set := range s.ByLabel {
+		rand.Shuffle(len(set), func(i, j int) { set[i], set[j] = set[j], set[i] })
+	}
+}

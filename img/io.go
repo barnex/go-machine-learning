@@ -87,6 +87,6 @@ func readdir(dir string, N int) []string {
 
 func check(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
