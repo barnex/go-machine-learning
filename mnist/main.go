@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"path"
 	"sync"
 	"time"
@@ -35,18 +36,39 @@ func main() {
 	log.Printf("loading data: %v examples, %v", len(all), time.Since(start))
 
 	net := NewNet(LU(numOut, numIn))
-	Randomize(net.Params(), .1)
+	Randomize(net.Params(), .01)
+
+	out := make([][]float64, net.NumParam())
 
 	for i := range train.ByLabel[0] {
-		loss := GradStep(net, train.Get(), 0.003)
+		loss := GradStep(net, train.Get(), 0.03)
+		//fmt.Println(i, loss)
 		if i%100 == 0 {
 			fmt.Println(i, loss, Accuracy(net, all[:1000]))
+
+			for j, w := range net.Params() {
+				out[j] = append(out[j], w)
+			}
 		}
 	}
+
+	saveW(out)
+
 	fmt.Println(Accuracy(net, all))
 
-	//	test := loadSet(path.Join(dir, "testing"), -1)
+}
 
+func saveW(w [][]float64) {
+	f, err := os.Create("weights.txt")
+	check(err)
+	defer f.Close()
+
+	for _, w := range w {
+		for j, w := range w {
+			fmt.Fprintln(f, j, w)
+		}
+		fmt.Fprintln(f)
+	}
 }
 
 func loadSet(dir string, N int) (*TrainingSet, []LV) {
@@ -73,4 +95,10 @@ func loadSet(dir string, N int) (*TrainingSet, []LV) {
 	set.Shuffle()
 	rand.Shuffle(len(all), func(i, j int) { all[i], all[j] = all[j], all[i] })
 	return set, all
+}
+
+func check(err error) {
+	if err != nil {
+		log.Panic(err)
+	}
 }
