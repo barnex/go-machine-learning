@@ -83,6 +83,16 @@ func minmax(list []float64) (min float64, max float64) {
 	return min, max
 }
 
+func maxv(list V) float64 {
+	max := list[0]
+	for _, v := range list[1:] {
+		if v > max {
+			max = v
+		}
+	}
+	return max
+}
+
 // mul multiplies by a constant:
 // 	dst[i] = s * a[i]
 func mul(dst []float64, s float64, a []float64) {

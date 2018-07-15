@@ -34,8 +34,8 @@ func (t T4) NumElem() int { return t.Size[3] }
 func (t T4) PrintTo(w io.Writer) {
 	for i := 0; i < t.NumElem(); i++ {
 		t.Elem(i).PrintTo(w)
+		fmt.Fprintln(w)
 	}
-	fmt.Fprintln(w)
 }
 
 func (t T4) String() string {

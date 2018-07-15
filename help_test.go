@@ -28,7 +28,8 @@ func testDiffW(t *testing.T, f DiffFunc) {
 	want := MakeM(diffWSize(f))
 	numericDiffW(want, f, w, x)
 
-	test.Approxv(t, have.List, want.List, 1e-5)
+	testApproxM(t, have, want, 1e-5)
+
 }
 
 func testDiffX(t *testing.T, f DiffFunc) {
@@ -45,7 +46,14 @@ func testDiffX(t *testing.T, f DiffFunc) {
 	want := MakeM(diffXSize(f))
 	numericDiffX(want, f, w, x)
 
-	test.Approxv(t, have.List, want.List, 1e-5)
+	testApproxM(t, have, want, 1e-5)
+}
+
+func testApproxM(t *testing.T, have, want M, tol float64) {
+	t.Helper()
+	if !test.IsApproxV(have.List, want.List, tol) {
+		t.Errorf("have:\n%vwant:\n%v", have, want)
+	}
 }
 
 func testGrad(t *testing.T, f *Net) {

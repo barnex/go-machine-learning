@@ -35,6 +35,12 @@ func Approxv(t *testing.T, have, want []float64, tol float64) {
 		t.Errorf("vector size mismatch: have len: %v, want: %v", len(have), len(want))
 	}
 
+	if !IsApproxV(have, want, tol) {
+		t.Errorf("have: %v, want: %v", have, want)
+	}
+}
+
+func IsApproxV(have, want []float64, tol float64) bool {
 	ok := true
 	for i := range have {
 		if math.Abs(have[i]-want[i]) > tol {
@@ -42,9 +48,7 @@ func Approxv(t *testing.T, have, want []float64, tol float64) {
 			break
 		}
 	}
-	if !ok {
-		t.Errorf("have: %v, want: %v", have, want)
-	}
+	return ok
 }
 
 func Eq(t *testing.T, have, want interface{}) {
