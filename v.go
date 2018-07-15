@@ -1,5 +1,11 @@
 package vs
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+)
+
 // V is a 1-dimensional vector
 type V []float64
 
@@ -7,15 +13,25 @@ func MakeV(length int) V {
 	return make(V, length)
 }
 
-// assureV makes sure p points to a vector of the specified length.
-// If p == nil then a vector is allocated,
-// otherwise the size of the existing vector is checked.
-func assureV(p V, length int) {
-	checkSize(p.Len(), length)
+func (v V) Len() int { return len(v) }
+
+func (v V) PrintTo(w io.Writer) {
+	fmt.Fprint(w, v[0])
+	for _, v := range v[1:] {
+		fmt.Fprint(w, " ", v)
+	}
 }
 
-func (v V) Len() int { return len(v) }
+func (v V) String() string {
+	return printToString(v)
+}
 
 func (v V) Dot(b V) float64 {
 	return dot(v, b)
+}
+
+func printToString(p interface{ PrintTo(io.Writer) }) string {
+	var b bytes.Buffer
+	p.PrintTo(&b)
+	return b.String()
 }

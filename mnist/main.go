@@ -36,7 +36,7 @@ func main() {
 	log.Printf("loading data: %v examples, %v", len(all), time.Since(start))
 
 	net := NewNet(LU(numOut, numIn))
-	Randomize(net.Params(), .01)
+	Randomize(net.Params(), .01, 1234)
 
 	out := make([][]float64, net.NumParam())
 

@@ -22,9 +22,9 @@ func (f *lu) Eval(y V, θ, x V) {
 // DiffW implements Func.
 func (f *lu) DiffW(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
-	for i := 0; i < dy.Rows(); i++ {
-		dyi := dy.Row(i)
-		copyv(f.Weights(dyi).Row(i), x)
+	for i := 0; i < dy.NumElem(); i++ {
+		dyi := dy.Elem(i)
+		copyv(f.Weights(dyi).Elem(i), x)
 		f.Biases(dyi)[i] = 1
 	}
 }
@@ -32,13 +32,13 @@ func (f *lu) DiffW(dy M, y, θ, x V) {
 // DiffX implements Func.
 func (f *lu) DiffX(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
-	for i := 0; i < dy.Rows(); i++ {
-		copyv(dy.Row(i), f.Weights(θ).Row(i))
+	for i := 0; i < dy.NumElem(); i++ {
+		copyv(dy.Elem(i), f.Weights(θ).Elem(i))
 	}
 }
 
 func (f *lu) Weights(θ V) M {
-	return Reshape(θ[:f.numW()], Dim2{f.nIn, f.nOut})
+	return Reshape2(θ[:f.numW()], Dim2{f.nIn, f.nOut})
 }
 
 func (f *lu) Biases(w V) V {

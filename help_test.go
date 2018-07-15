@@ -17,8 +17,8 @@ func testAccuracy(t *testing.T, n *Net, set []LV, want float64) {
 func testDiffW(t *testing.T, f DiffFunc) {
 	t.Helper()
 
-	w := randomV(f.NumParam())
-	x := randomV(f.NumIn())
+	w := randomV(f.NumParam(), 1234)
+	x := randomV(f.NumIn(), 4567)
 	y := MakeV(f.NumOut())
 	f.Eval(y, w, x)
 
@@ -34,8 +34,8 @@ func testDiffW(t *testing.T, f DiffFunc) {
 func testDiffX(t *testing.T, f DiffFunc) {
 	t.Helper()
 
-	w := randomV(f.NumParam())
-	x := randomV(f.NumIn())
+	w := randomV(f.NumParam(), 1234)
+	x := randomV(f.NumIn(), 4567)
 	y := MakeV(f.NumOut())
 	f.Eval(y, w, x)
 
@@ -52,8 +52,8 @@ func testGrad(t *testing.T, f *Net) {
 	t.Helper()
 
 	for c := 0; c < f.NumOut(); c++ {
-		Randomize(f.w, 1)
-		x := randomV(f.NumIn())
+		Randomize(f.w, 1, 1234)
+		x := randomV(f.NumIn(), 1234)
 
 		buf := MakeV(f.NumOut())
 		have := MakeV(f.NumParam())
@@ -66,9 +66,9 @@ func testGrad(t *testing.T, f *Net) {
 	}
 }
 
-func randomV(length int) V {
+func randomV(length int, seed int64) V {
 	y := MakeV(length)
-	Randomize(y, 1)
+	Randomize(y, 1, seed)
 	return y
 }
 
@@ -95,7 +95,7 @@ func numericDiff(dy M, f Func, w, x, coord V) {
 		coord[i] = backup // restore
 
 		for j := 0; j < f.NumOut(); j++ {
-			dy := dy.Row(j)
+			dy := dy.Elem(j)
 			dy[i] = (y2[j] - y1[j]) / (2 * δ)
 		}
 	}

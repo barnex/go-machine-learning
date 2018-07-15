@@ -18,6 +18,24 @@ func checkSize(a, b int) {
 	}
 }
 
+func checkDim2(a, b Dim2) {
+	if a != b {
+		panic(fmt.Sprintf("%v: size mismatch: %v != %v", caller(2), a, b))
+	}
+}
+
+// assureM checks p is a matrix of the specified size.
+// TODO: remove
+func assureM(p M, size Dim2) {
+	checkDim2(p.Size, size)
+}
+
+// assureV checks p is a vector of the specified size.
+// TODO: remove
+func assureV(p V, length int) {
+	checkSize(p.Len(), length)
+}
+
 func assert(test bool) {
 	if !test {
 		panic(fmt.Sprintf("%v: assertion failed", caller(1)))

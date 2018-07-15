@@ -46,7 +46,7 @@ func (f *withActivation) DiffX(dy M, y, w, x V) {
 	f.F.DiffX(dy, y, w, x)
 
 	for i := 0; i < dy.Size[1]; i++ {
-		dyi := dy.Row(i)
+		dyi := dy.Elem(i)
 		for j := 0; j < dy.Size[0]; j++ {
 			dyi[j] *= f.DiffActivation(y[i])
 		}
@@ -58,7 +58,7 @@ func (f *withActivation) DiffW(dy M, y, w, x V) {
 	f.F.DiffW(dy, y, w, x)
 
 	for i := 0; i < dy.Size[1]; i++ {
-		dyi := dy.Row(i)
+		dyi := dy.Elem(i)
 		for j := 0; j < dy.Size[0]; j++ {
 			dyi[j] *= f.DiffActivation(y[i])
 		}

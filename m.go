@@ -1,5 +1,10 @@
 package vs
 
+import (
+	"fmt"
+	"io"
+)
+
 // M is a matrix.
 type M struct {
 	List V
@@ -7,42 +12,39 @@ type M struct {
 }
 
 func MakeM(size Dim2) M {
-	return Reshape(make([]float64, size.Len()), size)
+	return Reshape2(make([]float64, size.Len()), size)
 }
 
-func Reshape(list []float64, size Dim2) M {
+func Reshape2(list []float64, size Dim2) M {
 	checkSize(len(list), size.Len())
 	return M{list, size}
 }
 
-// assureM makes sure p points to a matrix of the specified size.
-// If p == nil then a matrix is allocated,
-// otherwise the size of the existing matrix is checked.
-func assureM(p M, size Dim2) {
-	checkDim2(p.Size, size)
+// Elem returns the i-th row.
+func (t M) Elem(i int) V {
+	return t.List[i*t.stride() : (i+1)*t.stride()]
 }
 
-// Len returns the total number of elements.
-func (t M) Len() int {
-	return len(t.List)
+func (t M) stride() int { return t.Size[0] }
+
+// NumElem returns the number of rows.
+func (t M) NumElem() int { return t.Size[1] }
+
+func (t M) PrintTo(w io.Writer) {
+	for i := 0; i < t.NumElem(); i++ {
+		t.Elem(i).PrintTo(w)
+	}
+	fmt.Fprintln(w)
 }
 
-func (m M) IsNil() bool {
-	return m.Size == Dim2{} && m.List == nil
-}
-
-func (t M) Row(i int) V {
-	return t.List[i*t.Size[0] : (i+1)*t.Size[0]]
-}
-
-func (t M) Rows() int {
-	return t.Size[1]
+func (t M) String() string {
+	return printToString(t)
 }
 
 func mulMV(y V, A M, x V) {
 	assureV(y, A.Size[1])
 	for i := range y {
-		y[i] = A.Row(i).Dot(x)
+		y[i] = A.Elem(i).Dot(x)
 	}
 }
 
@@ -52,7 +54,7 @@ func mulVM(y V, x V, A M) {
 	for i := 0; i < A.Size[0]; i++ {
 		y[i] = 0
 		for j := 0; j < A.Size[1]; j++ {
-			y[i] += x[j] * A.Row(j)[i]
+			y[i] += x[j] * A.Elem(j)[i]
 		}
 	}
 	/*
