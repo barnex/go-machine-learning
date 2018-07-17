@@ -2,14 +2,16 @@ package img
 
 import (
 	"fmt"
+	"github.com/barnex/vectorstream"
 	"image/png"
 	"log"
 	"os"
 	"path"
 )
 
-func (m Img) Print() {
-	for _, row := range m.Elem {
+func Print(m vs.M) {
+	for j := 0; j < m.NumElem(); j++ {
+		row := m.Elem(j)
 		for i, v := range row {
 			if i != 0 {
 				fmt.Print(" ")
@@ -25,11 +27,12 @@ func (m Img) Print() {
 	fmt.Println()
 }
 
-func (m Img) Render(min, max float64) {
+func Render(m vs.M, min, max float64) {
 	// see https://en.wikipedia.org/wiki/ANSI_escape_code
 	const black = 232
 	const white = 255
-	for _, row := range m.Elem {
+	for j := 0; j < m.NumElem(); j++ {
+		row := m.Elem(j)
 		for _, v := range row {
 			col := int(black + ((v-min)/(max-min))*(white-black))
 			if col < black {
@@ -45,18 +48,20 @@ func (m Img) Render(min, max float64) {
 	fmt.Println()
 }
 
-// LoadImg loads a grayscale PNG image from file.
-func Load(fname string) Img {
+// Load loads a grayscale PNG image from file.
+func Load(fname string) vs.M {
 	f := mustOpen(fname)
 	defer f.Close()
 	img, err := png.Decode(f)
 	check(err)
-	mat := New(img.Bounds().Dy(), img.Bounds().Dx())
-	for iy := range mat.Elem {
-		for ix := range mat.Elem[iy] {
+	b := img.Bounds()
+	mat := vs.MakeM(vs.Dim2{b.Dx(), b.Dy()})
+	for iy := 0; iy < mat.NumElem(); iy++ {
+		row := mat.Elem(iy)
+		for ix := range row {
 			_, _ = ix, iy
 			r, _, _, _ := img.At(ix, iy).RGBA()
-			mat.Elem[iy][ix] = float64(float64(r) / 0xffff)
+			row[ix] = float64(float64(r) / 0xffff)
 		}
 	}
 	return mat
@@ -68,9 +73,9 @@ func mustOpen(fname string) *os.File {
 	return f
 }
 
-func LoadN(dir string, N int) []Img {
+func LoadN(dir string, N int) []vs.M {
 	ls := readdir(dir, N)
-	img := make([]Img, len(ls))
+	img := make([]vs.M, len(ls))
 	for i, f := range ls {
 		img[i] = Load(path.Join(dir, f))
 	}

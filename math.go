@@ -68,8 +68,8 @@ func mapf(dst, src []float64, f func(float64) float64) {
 	}
 }
 
-// minmax returns the minimum and maximum values.
-func minmax(list []float64) (min float64, max float64) {
+// MinMax returns the minimum and maximum values.
+func MinMax(list []float64) (min float64, max float64) {
 	min = list[0]
 	max = list[0]
 	for _, v := range list {
@@ -81,6 +81,13 @@ func minmax(list []float64) (min float64, max float64) {
 		}
 	}
 	return min, max
+}
+
+func Decay(x V, r float64) {
+	s := 1 - r
+	for i := range x {
+		x[i] *= s
+	}
 }
 
 func maxv(list V) float64 {

@@ -15,12 +15,19 @@ import (
 )
 
 const (
-	numOut  = 10
-	numIn   = 28 * 28
-	numBias = 10
+	numOut = 10
+	numPix = 28
+	numIn  = numPix * numPix
+	//numBias = 10
 )
 
 var digits = [10]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+var (
+	flagArg   = flag.String("a", "lu", "architecture")
+	flagRate  = flag.Float64("r", 0.03, "learning rate")
+	flagDecay = flag.Float64("d", 0.1, "weight decay")
+)
 
 func main() {
 	log.SetFlags(0)
@@ -35,24 +42,40 @@ func main() {
 	train, all := loadSet(path.Join(dir, "training"), 5000)
 	log.Printf("loading data: %v examples, %v", len(all), time.Since(start))
 
-	net := NewNet(LU(numOut, numIn))
+	//var net *Net
+	//switch *flagArg {
+	//case "lu":
+	//	net = NewNet(LU(numOut, numIn))
+	//case "max2":
+	//	net = NewNet(MaxPool1D(numOut, 2), LU(numOut*2, numIn))
+	//default:
+	//	log.Fatal("unknown architecture:", *flagArg)
+	//}
+	lu := LU(numOut*2, numIn)
+	net := NewNet(MaxPool1D(numOut, 2), lu)
+
 	Randomize(net.Params(), .01, 1234)
+	//out := make([][]float64, net.NumParam())
 
-	out := make([][]float64, net.NumParam())
-
-	for i := range train.ByLabel[0] {
-		loss := GradStep(net, train.Get(), 0.03)
-		//fmt.Println(i, loss)
-		if i%100 == 0 {
+	for i := 0; ; i++ {
+		loss := GradStep(net, train.Get(), *flagRate)
+		Decay(net.Params(), *flagRate**flagDecay)
+		if i%200 == 0 {
 			fmt.Println(i, loss, Accuracy(net, all[:1000]))
 
-			for j, w := range net.Params() {
-				out[j] = append(out[j], w)
-			}
+			w := lu.Weights(net.LParams(0)).List
+			imgs := Reshape2(w, Dim2{numPix, numPix * lu.NumOut()})
+
+			min, max := MinMax(imgs.List)
+			img.Render(imgs, min, max)
+
+			//for j, w := range net.Params() {
+			//	out[j] = append(out[j], w)
+			//}
 		}
 	}
 
-	saveW(out)
+	//saveW(out)
 
 	fmt.Println(Accuracy(net, all))
 

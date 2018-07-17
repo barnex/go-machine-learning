@@ -28,7 +28,7 @@ func TestMath(t *testing.T) {
 		test.Eqv(t, dst, V{3, 4})
 	}
 	{
-		min, max := minmax(V{1, 2, 3, 4, 5})
+		min, max := MinMax(V{1, 2, 3, 4, 5})
 		test.Eqf(t, min, 1)
 		test.Eqf(t, max, 5)
 	}
