@@ -12,6 +12,7 @@ import (
 
 	. "github.com/barnex/vectorstream"
 	"github.com/barnex/vectorstream/img"
+	"github.com/barnex/vectorstream/ui"
 )
 
 const (
@@ -43,19 +44,24 @@ func main() {
 	lu := LU(10*2, numPix*numPix)
 	dropout := Dropout(20, 2, 0.10)
 	max := MaxPool1D(10, 2)
-	lu2 := LU(10, 10)
-	net := NewNet(lu2, max, dropout, lu)
+	//lu2 := LU(10, 10)
+	net := NewNet(max, dropout, lu)
 	w := lu.Weights(net.LParams(0)).List
 	imgs := Reshape3(w, Dim3{numPix, numPix, 10 * 2})
 
 	Randomize(net.Params(), .01, 1234)
 
-	output := func() {
-		min, max := MinMax(imgs.List)
-		for _, m := range imgs.Elems() {
-			img.Render(m, min, max)
-		}
+	//	output := func() {
+	//		min, max := MinMax(imgs.List)
+	//		for _, m := range imgs.Elems() {
+	//			img.RenderText(m, min, max)
+	//		}
+	//	}
+
+	for i, m := range imgs.Elems() {
+		ui.RegisterImg(fmt.Sprintf("lu%v", i), m)
 	}
+	go ui.Serve(":2536")
 
 	for i := 0; ; i++ {
 
@@ -66,6 +72,7 @@ func main() {
 
 		// step
 		loss := GradStep(net, train.Get(), *flagRate)
+		fmt.Println(loss)
 
 		// regularize norm == 1
 		for _, m := range imgs.Elems() {
@@ -73,12 +80,12 @@ func main() {
 			Mul(m, 1/Norm(m), m)
 		}
 
-		if i%100 == 0 {
-			output()
-			dropout.Disable()
-			fmt.Println(i, loss, Accuracy(net, all[:1000]))
-			dropout.NextState()
-		}
+		//if i%100 == 0 {
+		//	output()
+		//	dropout.Disable()
+		//	fmt.Println(i, loss, Accuracy(net, all[:1000]))
+		//	dropout.NextState()
+		//}
 	}
 }
 

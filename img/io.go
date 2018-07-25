@@ -2,11 +2,12 @@ package img
 
 import (
 	"fmt"
-	"github.com/barnex/vectorstream"
 	"image/png"
 	"log"
 	"os"
 	"path"
+
+	"github.com/barnex/vectorstream"
 )
 
 func Print(m vs.M) {
@@ -27,7 +28,7 @@ func Print(m vs.M) {
 	fmt.Println()
 }
 
-func Render(m vs.M, min, max float64) {
+func RenderText(m vs.M, min, max float64) {
 	// see https://en.wikipedia.org/wiki/ANSI_escape_code
 	const black = 232
 	const white = 255
