@@ -28,6 +28,11 @@ func argmax(x []float64) int {
 	return maxI
 }
 
+// Average returns the Average of elements.
+func Average(x []float64) float64 {
+	return Sum(x) / float64(len(x))
+}
+
 // dot returns the dot product
 // 	sum_i a[i]*b[i]
 func dot(a, b []float64) float64 {
@@ -45,7 +50,7 @@ func norm2(x []float64) float64 {
 }
 
 // norm returns the length of vector x.
-func norm(x []float64) float64 {
+func Norm(x []float64) float64 {
 	return math.Sqrt(dot(x, x))
 }
 
@@ -59,9 +64,9 @@ func madd(dst, a []float64, s float64, b []float64) {
 	}
 }
 
-// mapf applies f to all elements of a list:
+// Map applies f to all elements of a list:
 // 	dst[i] = f(src[i])
-func mapf(dst, src []float64, f func(float64) float64) {
+func Map(dst, src []float64, f func(float64) float64) {
 	checkSize(len(dst), len(src))
 	for i := range src {
 		dst[i] = f(src[i])
@@ -100,9 +105,9 @@ func maxv(list V) float64 {
 	return max
 }
 
-// mul multiplies by a constant:
+// Mul multiplies by a constant:
 // 	dst[i] = s * a[i]
-func mul(dst []float64, s float64, a []float64) {
+func Mul(dst []float64, s float64, a []float64) {
 	checkSize(len(dst), len(a))
 	for i, a := range a {
 		dst[i] = s * a
@@ -118,20 +123,20 @@ func Randomize(dst []float64, amplitude float64, seed int64) {
 	}
 }
 
-// set sets all elements to value v.
-func set(dst []float64, v float64) {
+// Set sets all elements to value v.
+func Set(dst []float64, v float64) {
 	for i := range dst {
 		dst[i] = v
 	}
 }
 
 func softmax(dst, src []float64) {
-	mapf(dst, src, math.Exp)
-	mul(dst, 1/sum(dst), dst)
+	Map(dst, src, math.Exp)
+	Mul(dst, 1/Sum(dst), dst)
 }
 
-// sum returns the sum of all elements.
-func sum(list []float64) float64 {
+// Sum returns the Sum of all elements.
+func Sum(list []float64) float64 {
 	var sum float64
 	for _, v := range list {
 		sum += float64(v)
@@ -140,12 +145,14 @@ func sum(list []float64) float64 {
 }
 
 // Cross-entropy of softmax
+// TODO: move
 func softXen(y V, c int) float64 {
 	buf := MakeV(len(y)) // TODO: don't alloc
 	softmax(buf, y)
 	return -math.Log(buf[c])
 }
 
+// TODO: move
 func gradSoftXen(grad, y V, c int) {
 	copyv(grad, y)
 	grad[c] -= 1

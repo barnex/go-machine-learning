@@ -24,6 +24,7 @@ func (f *lu) DiffW(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
 	for i := 0; i < dy.NumElem(); i++ {
 		dyi := dy.Elem(i)
+		Set(dyi, 0)
 		copyv(f.Weights(dyi).Elem(i), x)
 		f.Biases(dyi)[i] = 1
 	}

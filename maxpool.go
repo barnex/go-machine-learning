@@ -27,7 +27,7 @@ func (f *maxPool1D) DiffW(dy M, _, _, _ V) {
 // DiffX implements Func.
 func (f *maxPool1D) DiffX(dy M, y, θ, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
-	set(dy.List, 0)
+	Set(dy.List, 0)
 
 	X := Reshape2(x, Dim2{f.width, f.NumOut()})
 	for i := 0; i < f.NumOut(); i++ {

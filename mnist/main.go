@@ -24,9 +24,7 @@ const (
 var digits = [10]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 var (
-	flagArg   = flag.String("a", "lu", "architecture")
-	flagRate  = flag.Float64("r", 0.03, "learning rate")
-	flagDecay = flag.Float64("d", 0.1, "weight decay")
+	flagRate = flag.Float64("r", 0.05, "learning rate")
 )
 
 func main() {
@@ -42,43 +40,49 @@ func main() {
 	train, all := loadSet(path.Join(dir, "training"), 5000)
 	log.Printf("loading data: %v examples, %v", len(all), time.Since(start))
 
-	//var net *Net
-	//switch *flagArg {
-	//case "lu":
-	//	net = NewNet(LU(numOut, numIn))
-	//case "max2":
-	//	net = NewNet(MaxPool1D(numOut, 2), LU(numOut*2, numIn))
-	//default:
-	//	log.Fatal("unknown architecture:", *flagArg)
-	//}
-	lu := LU(numOut*2, numIn)
-	net := NewNet(MaxPool1D(numOut, 2), lu)
+	lu := LU(10*2, numPix*numPix)
+	dropout := Dropout(20, 2, 0.10)
+	max := MaxPool1D(10, 2)
+	lu2 := LU(10, 10)
+	net := NewNet(lu2, max, dropout, lu)
+	w := lu.Weights(net.LParams(0)).List
+	imgs := Reshape3(w, Dim3{numPix, numPix, 10 * 2})
 
 	Randomize(net.Params(), .01, 1234)
-	//out := make([][]float64, net.NumParam())
 
-	for i := 0; ; i++ {
-		loss := GradStep(net, train.Get(), *flagRate)
-		Decay(net.Params(), *flagRate**flagDecay)
-		if i%200 == 0 {
-			fmt.Println(i, loss, Accuracy(net, all[:1000]))
-
-			w := lu.Weights(net.LParams(0)).List
-			imgs := Reshape2(w, Dim2{numPix, numPix * lu.NumOut()})
-
-			min, max := MinMax(imgs.List)
-			img.Render(imgs, min, max)
-
-			//for j, w := range net.Params() {
-			//	out[j] = append(out[j], w)
-			//}
+	output := func() {
+		min, max := MinMax(imgs.List)
+		for _, m := range imgs.Elems() {
+			img.Render(m, min, max)
 		}
 	}
 
-	//saveW(out)
+	for i := 0; ; i++ {
 
-	fmt.Println(Accuracy(net, all))
+		dropout.NextState()
 
+		// decay
+		Mul(w, 1-*flagRate/2, w)
+
+		// step
+		loss := GradStep(net, train.Get(), *flagRate)
+
+		// regularize norm == 1
+		for _, m := range imgs.Elems() {
+			m := m.List
+			Mul(m, 1/Norm(m), m)
+		}
+
+		if i%100 == 0 {
+			output()
+			dropout.Disable()
+			fmt.Println(i, loss, Accuracy(net, all[:1000]))
+			dropout.NextState()
+		}
+	}
+}
+
+func regularize(x V) {
 }
 
 func saveW(w [][]float64) {

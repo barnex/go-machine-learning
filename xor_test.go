@@ -18,8 +18,8 @@ func TestXOR_Training2(t *testing.T) {
 	net := NewNet(l1, l0)
 
 	Randomize(net.Params(), .01, 1234)
-	set(lu0.Biases(net.LParams(0)), .1)
-	set(l1.Biases(net.LParams(1)), .1)
+	Set(lu0.Biases(net.LParams(0)), .1)
+	Set(l1.Biases(net.LParams(1)), .1)
 	madd(net.Params(), net.Params(), .05, randomV(net.NumParam(), 1234))
 
 	set := []LV{

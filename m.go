@@ -25,6 +25,14 @@ func (t M) Elem(i int) V {
 	return t.List[i*t.stride() : (i+1)*t.stride()]
 }
 
+func (t M) Elems() []V {
+	e := make([]V, t.NumElem())
+	for i := range e {
+		e[i] = t.Elem(i)
+	}
+	return e
+}
+
 func (t M) stride() int { return t.Size[0] }
 
 // NumElem returns the number of rows.

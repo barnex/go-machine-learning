@@ -23,6 +23,7 @@ func testDiffW(t *testing.T, f DiffFunc) {
 	f.Eval(y, w, x)
 
 	have := MakeM(diffWSize(f))
+	Set(have.List, 666)
 	f.DiffW(have, y, w, x)
 
 	want := MakeM(diffWSize(f))
@@ -41,6 +42,7 @@ func testDiffX(t *testing.T, f DiffFunc) {
 	f.Eval(y, w, x)
 
 	have := MakeM(diffXSize(f))
+	Set(have.List, 666)
 	f.DiffX(have, y, w, x)
 
 	want := MakeM(diffXSize(f))

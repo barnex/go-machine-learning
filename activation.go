@@ -38,7 +38,7 @@ func (f *withActivation) NumIn() int    { return f.F.NumIn() }
 
 func (f *withActivation) Eval(y V, w, x V) {
 	f.F.Eval(y, w, x)
-	mapf(y, y, f.Activation)
+	Map(y, y, f.Activation)
 }
 
 func (f *withActivation) DiffX(dy M, y, w, x V) {

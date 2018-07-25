@@ -27,6 +27,14 @@ func (t T3) Elem(i int) M {
 	}
 }
 
+func (t T3) Elems() []M {
+	e := make([]M, t.NumElem())
+	for i := range e {
+		e[i] = t.Elem(i)
+	}
+	return e
+}
+
 func (t T3) stride() int { return t.Size[0] * t.Size[1] }
 
 func (t T3) NumElem() int { return t.Size[2] }

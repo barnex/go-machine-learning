@@ -18,7 +18,7 @@ func (f *unit) Eval(y V, w, x V) {
 
 func (f *unit) DiffW(dy M, y, w, x V) {
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
-	set(dy.List, 0)
+	Set(dy.List, 0)
 	for i := 0; i < dy.NumElem(); i++ {
 		dy.Elem(i)[i] = x[i]
 	}
@@ -26,7 +26,7 @@ func (f *unit) DiffW(dy M, y, w, x V) {
 
 func (f *unit) DiffX(dy M, y, w, x V) {
 	assureM(dy, Dim2{f.NumIn(), f.NumOut()})
-	set(dy.List, 0)
+	Set(dy.List, 0)
 	for i := 0; i < dy.NumElem(); i++ {
 		dy.Elem(i)[i] = w[i]
 	}

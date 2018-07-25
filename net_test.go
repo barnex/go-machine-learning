@@ -10,7 +10,7 @@ import (
 func TestNet_Eval_Unit(t *testing.T) {
 	// softmax * unit matrix
 	net := NewNet(Unit(2))
-	set(net.Params(), 1)
+	Set(net.Params(), 1)
 
 	y := MakeV(2)
 	x := V{1, 0}

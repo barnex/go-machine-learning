@@ -76,7 +76,7 @@ func (f *conv) DiffW(dy M, y, θ, x V) {
 	*/
 
 	assureM(dy, Dim2{f.NumParam(), f.NumOut()})
-	set(dy.List, 0)
+	Set(dy.List, 0)
 
 	for out := 0; out < dy.NumElem(); out++ {
 
