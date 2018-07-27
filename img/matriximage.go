@@ -18,8 +18,9 @@ type matrixImage struct {
 }
 
 func (m *matrixImage) At(i, j int) color.Color {
-	y := srgb(m.m.Elem(j)[i])
-	return color.Gray{uint8(y * 255)}
+	x := m.m.Elem(j)[i]
+	y := (x - m.min) / (m.max - m.min)
+	return color.Gray{uint8(srgb(y) * 255)}
 }
 
 func (m *matrixImage) Bounds() image.Rectangle {

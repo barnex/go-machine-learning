@@ -44,7 +44,6 @@ func main() {
 	lu := LU(10*2, numPix*numPix)
 	dropout := Dropout(20, 2, 0.10)
 	max := MaxPool1D(10, 2)
-	//lu2 := LU(10, 10)
 	net := NewNet(max, dropout, lu)
 	w := lu.Weights(net.LParams(0)).List
 	imgs := Reshape3(w, Dim3{numPix, numPix, 10 * 2})
@@ -59,7 +58,7 @@ func main() {
 	//	}
 
 	for i, m := range imgs.Elems() {
-		ui.RegisterImg(fmt.Sprintf("lu%v", i), m)
+		ui.RegisterImg(fmt.Sprintf("lu%02d", i), m)
 	}
 	go ui.Serve(":2536")
 
@@ -68,7 +67,7 @@ func main() {
 		dropout.NextState()
 
 		// decay
-		Mul(w, 1-*flagRate/2, w)
+		Mul(w, 1-*flagRate, w)
 
 		// step
 		loss := GradStep(net, train.Get(), *flagRate)
