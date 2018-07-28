@@ -44,18 +44,21 @@ func main() {
 	lu := LU(10*2, numPix*numPix)
 	dropout := Dropout(20, 2, 0.10)
 	max := MaxPool1D(10, 2)
+
 	net := NewNet(max, dropout, lu)
+
 	w := lu.Weights(net.LParams(0)).List
 	imgs := Reshape3(w, Dim3{numPix, numPix, 10 * 2})
 
 	Randomize(net.Params(), .01, 1234)
 
-	//	output := func() {
-	//		min, max := MinMax(imgs.List)
-	//		for _, m := range imgs.Elems() {
-	//			img.RenderText(m, min, max)
-	//		}
-	//	}
+	var loss V
+	ui.RegisterPlot("loss", &loss)
+	var accuracy V
+	ui.RegisterPlot("accuracy", &accuracy)
+
+	p := net.Params()
+	ui.RegisterPlot("params", &p)
 
 	for i, m := range imgs.Elems() {
 		ui.RegisterImg(fmt.Sprintf("lu%02d", i), m)
@@ -64,27 +67,26 @@ func main() {
 
 	for i := 0; ; i++ {
 
+		if i%100 == 0 {
+			dropout.Disable()
+			acc := Accuracy(net, all[:1000])
+			accuracy = append(accuracy, acc)
+		}
+
 		dropout.NextState()
 
 		// decay
 		Mul(w, 1-*flagRate, w)
 
 		// step
-		loss := GradStep(net, train.Get(), *flagRate)
-		fmt.Println(loss)
+		l := GradStep(net, train.Get(), *flagRate)
+		loss = append(loss, l)
 
 		// regularize norm == 1
 		for _, m := range imgs.Elems() {
 			m := m.List
 			Mul(m, 1/Norm(m), m)
 		}
-
-		//if i%100 == 0 {
-		//	output()
-		//	dropout.Disable()
-		//	fmt.Println(i, loss, Accuracy(net, all[:1000]))
-		//	dropout.NextState()
-		//}
 	}
 }
 
