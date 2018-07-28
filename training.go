@@ -5,13 +5,13 @@ import (
 	"math/rand"
 )
 
-func GradDescent(n *Net, s TrainingSet, rate float64, nStep int) {
-
-}
-
 func GradStep(n *Net, set []LV, rate float64) (avgLoss float64) {
 	y := MakeV(n.NumOut())
 	dy := MakeV(n.NumParam())
+	return GradStepBuf(n, set, rate, y, dy)
+}
+
+func GradStepBuf(n *Net, set []LV, rate float64, y, dy V) (avgLoss float64) {
 	step := MakeV(n.NumParam())
 
 	totalLoss := 0.0

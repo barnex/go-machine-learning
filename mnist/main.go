@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"os"
 	"path"
@@ -41,16 +42,24 @@ func main() {
 	train, all := loadSet(path.Join(dir, "training"), 5000)
 	log.Printf("loading data: %v examples, %v", len(all), time.Since(start))
 
-	lu := LU(10*2, numPix*numPix)
-	dropout := Dropout(20, 2, 0.10)
-	max := MaxPool1D(10, 2)
+	lu1 := LU(16, numPix*numPix)
+	lu2 := LU(10, 16)
+	lu3 := LU(10, 10)
 
-	net := NewNet(max, dropout, lu)
+	net := NewNet(lu3, Re(lu2), Re(lu1))
 
-	w := lu.Weights(net.LParams(0)).List
-	imgs := Reshape3(w, Dim3{numPix, numPix, 10 * 2})
+	imgs := Reshape3(lu1.Weights(net.LParams(0)).List, Dim3{numPix, numPix, lu1.NumOut()})
+	for i, m := range imgs.Elems() {
+		ui.RegisterImg(fmt.Sprintf("relu1_%02d", i), m)
+	}
+	ui.RegisterImg("relu2", lu2.Weights(net.LParams(1)))
+	ui.RegisterImg("lu3", lu3.Weights(net.LParams(2)))
 
-	Randomize(net.Params(), .01, 1234)
+	y := MakeV(net.NumOut())
+	dy := MakeV(net.NumParam())
+
+	Randomize(net.Params(), .01, 134)
+	Map(net.Params(), net.Params(), math.Abs)
 
 	var loss V
 	ui.RegisterPlot("loss", &loss)
@@ -59,34 +68,35 @@ func main() {
 
 	p := net.Params()
 	ui.RegisterPlot("params", &p)
+	ui.RegisterPlot("grad", &dy)
 
-	for i, m := range imgs.Elems() {
-		ui.RegisterImg(fmt.Sprintf("lu%02d", i), m)
-	}
+	//for i, m := range imgs.Elems() {
+	//	ui.RegisterImg(fmt.Sprintf("lu%02d", i), m)
+	//}
 	go ui.Serve(":2536")
 
 	for i := 0; ; i++ {
 
-		if i%100 == 0 {
-			dropout.Disable()
+		if i%10 == 0 {
+			//	dropout.Disable()
 			acc := Accuracy(net, all[:1000])
 			accuracy = append(accuracy, acc)
 		}
 
-		dropout.NextState()
+		//dropout.NextState()
 
 		// decay
-		Mul(w, 1-*flagRate, w)
+		//Mul(w, 1-*flagRate, w)
 
 		// step
-		l := GradStep(net, train.Get(), *flagRate)
+		l := GradStepBuf(net, train.Get(), *flagRate, y, dy)
 		loss = append(loss, l)
 
 		// regularize norm == 1
-		for _, m := range imgs.Elems() {
-			m := m.List
-			Mul(m, 1/Norm(m), m)
-		}
+		//for _, m := range imgs.Elems() {
+		//	m := m.List
+		//	Mul(m, 1/Norm(m), m)
+		//}
 	}
 }
 

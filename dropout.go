@@ -26,7 +26,7 @@ func (f *dropout) Eval(y, _, x V) {
 	copyv(y, x)
 	for i := range f.drop {
 		if f.drop[i] {
-			y[i] = -1000 // TODO: which value?
+			y[i] = -1 // TODO: which value?
 		}
 	}
 }
